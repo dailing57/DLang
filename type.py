@@ -34,3 +34,10 @@ class BuiltinFunction:
 class Error(Exception):
     def __init__(self, message=None):
         self.message = f'{self.__class__.__name__}: {message}'
+
+stringType = 'stringType'
+numberType = 'numberType'
+floatType = 'floatType'
+boolType = 'boolType'
+voidType = 'voidType'
+
