@@ -1,6 +1,6 @@
 from type import *
-
-class GlobalVariavleCode:
+from typing import Union
+class GlobalVariableCode:
     def __init__(self,globalAddress,type) -> None:
         self.globalAddress = globalAddress
         self.type = type
@@ -9,6 +9,8 @@ class LocalVariableCode:
     def __init__(self,address,type) -> None:
         self.addres = address
         self.type = type
+
+VariableCode = Union[GlobalVariableCode ,LocalVariableCode]
 
 class ThreeAddressCodeType:
     NOP = 'NOP',
@@ -89,6 +91,17 @@ class PushStackCode:
     def __init__(self,type,src) -> None:
         self.type = type
         self.src = src
+
+ThreeAddressCode = Union[
+    NOPCode,
+    FunctionCallCode,
+    FunctionReturnCode,
+    GotoCode,
+    IfGotoCode,
+    BinOPCode,
+    UnitOPCode,
+    PushStackCode
+]
 
 def getBinOPType(op,a=None,b=None):
     if a is None or b is None:

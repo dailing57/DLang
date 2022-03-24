@@ -1,3 +1,43 @@
+from typing import Union
+
+from pip import main
+# ValueType
+
+stringType  = 'stringType'
+numberType  = 'numberType'
+floatType   = 'floatType'
+boolType    = 'boolType'
+voidType    = 'voidType'
+
+# CmpOPType
+NotEqual    = 'NotEqual'
+Equal       = 'Equal'
+LessThan    = 'LessThan'
+MoreThan    = 'MoreThan'
+LessOrEqual = 'LessOrEqual'
+MoreOrEqual = 'MoreOrEqual'
+
+# BinOPType
+Plus        = 'Plus'
+Minus       = 'Minus'
+Mul         = 'Mul'
+Div         = 'Div'
+Mod         = 'Mod'
+Negative    = 'Negative'
+Not         = 'Not'
+And         = 'And'
+Or          = 'Or'
+
+# UnitOPType
+Negative    = 'Negative'
+Not         = 'Not'
+Assign      = 'Assign'
+
+# VoidType
+VoidType    = 'voidType'
+
+Main        = 'main'
+FunctionDef = 'FunctionDef'
 class Variable:
     def __init__(self, id, name, isArg, isConst, isGlobal, type=None, value=None) -> None:
         self.id = id
@@ -35,9 +75,4 @@ class Error(Exception):
     def __init__(self, message=None):
         self.message = f'{self.__class__.__name__}: {message}'
 
-stringType = 'stringType'
-numberType = 'numberType'
-floatType = 'floatType'
-boolType = 'boolType'
-voidType = 'voidType'
-
+GlobalFunction = Union[UserFunction , BuiltinFunction]

@@ -1,5 +1,4 @@
-from enum import Enum
-class color(Enum):
-    Plus = 'AA'
-
-print(color.Plus)
+a = [1,2]
+b = [3,4]
+a += b
+print(a)
