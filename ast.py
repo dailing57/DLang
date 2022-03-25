@@ -182,7 +182,7 @@ class StatementListASTNode(BasicASTNode):
     def __init__(self, createContext = False) -> None:
         super().__init__(StatementListType)
         self.createContext = createContext
-        self.statements:list[Sta]
+        
 
 class FunctionReturnASTNode(BasicASTNode):
     def __init__(self) -> None:
