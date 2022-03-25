@@ -7,7 +7,7 @@ class GlobalVariableCode:
 
 class LocalVariableCode:
     def __init__(self,address,type) -> None:
-        self.addres = address
+        self.address = address
         self.type = type
 
 VariableCode = Union[GlobalVariableCode ,LocalVariableCode]

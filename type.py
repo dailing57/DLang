@@ -1,6 +1,4 @@
 from typing import Union
-
-from pip import main
 # ValueType
 
 stringType  = 'stringType'
@@ -38,8 +36,10 @@ VoidType    = 'voidType'
 
 Main        = 'main'
 FunctionDef = 'FunctionDef'
+globalAddress = 'globalAddress'
+
 class Variable:
-    def __init__(self, id, name, isArg, isConst, isGlobal, type=None, value=None) -> None:
+    def __init__(self, id, name, isArg=False, isConst=True, isGlobal=False, type=None, value=None) -> None:
         self.id = id
         self.name = name
         self.isArg = isArg
