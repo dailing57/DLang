@@ -37,7 +37,8 @@ VoidType    = 'voidType'
 Main        = 'main'
 FunctionDef = 'FunctionDef'
 globalAddress = 'globalAddress'
-
+VariableType = 'Variable'
+LiteralType  = 'Literal'
 class Variable:
     def __init__(self, id, name, isArg=False, isConst=True, isGlobal=False, type=None, value=None) -> None:
         self.id = id

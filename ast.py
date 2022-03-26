@@ -51,7 +51,7 @@ class BinOPASTNode(BasicASTNode):
         yres = self.y.visit(context=context)
         if xres.dst is not None and yres.dst is not None:
             code += xres.code
-            if globalAddress in xres.dst and xres.dst.globalAddress == 0:
+            if hasattr(xres.dst,globalAddress) and xres.dst.globalAddress == 0:
                 global varCnt
                 varCnt+=1
                 tmpDst = LocalVariableCode(varCnt,type=xres.dst.type)
@@ -99,16 +99,143 @@ class BinOPASTNode(BasicASTNode):
         else:
             raise Error('unknown')
 
-class UnitASTNode(BasicASTNode):
-    pass
+class UnitOPASTNode(BasicASTNode):
+    def __init__(self, type,dst,src) -> None:
+        super().__init__(type)
+        self.dst:Variable = dst
+        self.src:ValueASTNode = src
+    def visit(self, context: Context) -> NodeVisitorReturn:
+        code:list[ThreeAddressCode] = []
+        res = self.src.visit(context=context)
+        if res.dst is not None:
+            code += res.code
+            if self.dst.id == -1:
+                mem = context.symbols.query(self.dst.name)
+                if mem is not None:
+                    if mem.type is None:
+                        mem.type = res.dst.type
+                    elif mem.type != res.dst.type:
+                        raise Error(f'{mem.type} variable {self.dst.name} can not be assigned {res.dst.type} value')
+                    if self.type == Assign and mem.isConst:
+                        raise Error(f'const variable {self.dst.name} can not be assigned a new value')
+                    dst = GlobalVariableCode(globalAddress=mem.id,type=mem.type) if mem.isGloabal else LocalVariableCode(address=mem.id,type=mem.type)
+                    code.append(UnitOPCode(
+                        type=self.type,
+                        dst = dst,
+                        src = res.dst
+                    ))
+                    return NodeVisitorReturn(code=code,dst=dst)   
+                else:
+                    raise(Error(f'variable {self.dst.name} is not defined'))
+            else:
+                global varCnt
+                varCnt+=1
+                tmpVar = varCnt
+                type = getUnitOPType(self.type,res.dst.type)
+                if type is not None:
+                    context.symbols.add(tmpVar,'$'+str(tmpVar),type)
+                    code.append(UnitOPCode(
+                        type = self.type,
+                        dst = LocalVariableCode(address=tmpVar,type=type),
+                        src = res.dst
+                    ))
+                    return NodeVisitorReturn(code,LocalVariableCode(address=tmpVar,type=type))
+                else:
+                    raise(Error('Type Error'))
+        else:
+            raise(Error('unknown'))
 
 class LeafASTNode(BasicASTNode):
-    pass
+    def __init__(self, item) -> None:
+        if hasattr(item,'id'):
+            VariableType
+            super().__init__(VariableType)
+        else:
+            super.__init__(LiteralType)
+        self.dst:Union[Variable,Literal] = item
+    def visit(self, context: Context) -> NodeVisitorReturn:
+        if self.type == VariableType:
+            name = self.dst.name
+            mem = context.symbols.query(name)
+            if mem is not None:
+                if mem.type is not None:
+                    dst =GlobalVariableCode(globalAddress=mem.id,type=mem.type) if mem.isGloabal else LocalVariableCode(address=mem.id,type=mem.type)
+                    return NodeVisitorReturn([],dst=dst)
+                else:
+                    raise(Error(f'variable {name} is not in initialized'))
+            else:
+                raise(Error(f'variable {name} is not defined'))
+        elif self.type == LiteralType:
+            dst = self.dst
+            return NodeVisitorReturn([],dst=LiteralCode(value=dst.value,tyep=dst.type))
+        else:
+            raise(Error('unknown'))
+
+class FunctionCallArgListASTNode(BasicASTNode):
+    def __init__(self) -> None:
+        super().__init__(FunctionCallArgListType)
+        self.args:list[ValueASTNode] = []
+        self.types = []
+
+    def merge(self,other):
+        self.args += other.args
+    
+    def checkType(self,realArgs:list):
+        if len(self.types) != len(realArgs):
+            return False
+        for i in range(len(realArgs)):
+            if self.types[i] != realArgs[i]:
+                return False
+        return True
+    
+    def visit(self, context: Context) -> NodeVisitorReturn:
+        code:list[ThreeAddressCode] = []
+        for arg in self.args:
+            res = arg.visit(context)
+            if res.dst is not None:
+                self.types.append(res.dst.type)
+                code += res.code
+                pushCode = PushStackCode(
+                    type= ThreeAddressCodeType.PushStack,
+                    src= res.dst
+                )
+                code.append(pushCode)
+            else:
+                raise(Error('Type Error'))
+        return NodeVisitorReturn(code)
 
 class FunctionCallASTNode(BasicASTNode):
-    pass
+    def __init__(self, name, args) -> None:
+        super().__init__(FunctionCallType)
+        self.name:str = name
+        self.args:FunctionCallArgListASTNode = args
+    
+    def visit(self, context: Context) -> NodeVisitorReturn:
+        fn = context.globalFns[self.name]
+        if fn is not None:
+            if len(self.args) == len(fn.args):
+                code:list[ThreeAddressCode] = []
+                res = self.args.visit(context=context)
+                if self.args.checkType(fn.args):
+                    code += res.code
+                    callCode:FunctionCallCode(
+                        type=ThreeAddressCodeType.FunctionCall,
+                        name=self.name
+                    )
+                    code.append(callCode)
+                    if fn.type == voidType:
+                        return NodeVisitorReturn(code)
+                    else:
+                        dst = GlobalVariableCode(globalAddress=0,type = fn.type)
+                        return NodeVisitorReturn(code,dst)
+                else:
+                    raise(Error(f'function "{self.name}" call arg list types are not matched'))
+            else:
+                raise(Error(f'function "{self.name}" call arg list length is not matched'))
+        else:
+            raise(Error(f'function "{self.name}" is not defined'))
 
-ValueASTNode = Union[BinOPASTNode,UnitASTNode,LeafASTNode,FunctionCallASTNode]
+ValueASTNode = Union[BinOPASTNode,UnitOPASTNode,LeafASTNode,FunctionCallASTNode]
 
 class RootASTNode(BasicASTNode):
     def __init__(self) -> None:
