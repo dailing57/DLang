@@ -440,16 +440,17 @@ class ForStatementASTNode(BasicASTNode):
             return NodeVisitorReturn(code)
         else:
             raise(Error('void error'))
-class StatementListASTNode(BasicASTNode):
-    def __init__(self, createContext = False) -> None:
-        super().__init__(StatementListType)
-        self.createContext = createContext
+
+class WhileStatementASTNode(BasicASTNode):
+    pass
 
 class IfStatementASTNode(BasicASTNode):
     pass
 
-class WhileStatementASTNode(BasicASTNode):
-    pass
+class StatementListASTNode(BasicASTNode):
+    def __init__(self, createContext = False) -> None:
+        super().__init__(StatementListType)
+        self.createContext = createContext
 
 StatementASTNode = Union[StatementListASTNode,ValueASTNode,DefineListASTNode,FunctionReturnASTNode,IfStatementASTNode,WhileStatementASTNode,ForStatementASTNode]
 
