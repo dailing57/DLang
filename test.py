@@ -1,4 +1,6 @@
-a = [1,2]
-b = [3,4]
-a += b
-print(a)
+class A:
+    def __init__(self) -> None:
+        self.a=0
+        self.b=1
+a = A()
+print(*a)

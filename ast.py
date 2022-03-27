@@ -303,18 +303,156 @@ class ArgDefineListASTNode(BasicASTNode):
                 isArg=True,
                 isConst=False
             ))
-        return super().visit(context)
-
-class StatementListASTNode(BasicASTNode):
-    def __init__(self, createContext = False) -> None:
-        super().__init__(StatementListType)
-        self.createContext = createContext
-        
+        return NodeVisitorReturn([])
 
 class FunctionReturnASTNode(BasicASTNode):
     def __init__(self) -> None:
         super().__init__(FunctionReturnType)
-        self.src = ValueASTNode
+        self.src: ValueASTNode = None
+    
+    def visit(self, context: Context) -> NodeVisitorReturn:
+        fnObj = context.globalFns[context.fnName]
+        if fnObj is None:
+            raise(Error('unknown'))
+        if self.src is not None:
+            code:list[ThreeAddressCode] = []
+            res = self.src.visit(context)
+            if res.dst is not None:
+                code += res.code
+                if fnObj.type != res.dst.type:
+                    raise(Error(f'function "${context.fnName}" should return <void>, but return <{res.dst.type}>'))
+                returnCode = FunctionReturnCode(
+                    type=ThreeAddressCodeType.FunctionReturn,
+                    name=context.fnName,
+                    src=res.dst
+                )
+                code += returnCode
+                return NodeVisitorReturn(code)
+            else:
+                raise(Error(f'function "{context.fnName}" return value is void'))
+        else:
+            if fnObj.type != voidType:
+                raise(Error(f'function "{context.fnName}" should return <{fnObj.type}>, but return <void>'))
+            returnCode = FunctionReturnCode(
+                type= ThreeAddressCodeType.FunctionReturn,
+                name = context.fnName
+            )
+            return NodeVisitorReturn([returnCode])
+
+
+class DefineASTNode(BasicASTNode):
+    def __init__(self,dst,src=None) -> None:
+        super().__init__(DefineType)
+        self.dst:Variable = dst
+        self.src:ValueASTNode = src
+
+    def visit(self, context: Context) -> NodeVisitorReturn:
+        code:list[ThreeAddressCode] = []
+        if self.src is not None:
+            res = self.src.visit(context)
+            code += res.code
+            if res.dst is not None:
+                if self.dst.type == None or self.dst.type == res.dst.type:
+                    global varCnt
+                    varCnt += 1
+                    address = varCnt
+                    context.symbols.add(Variable(address,self.dst.name,res.dst.type,isConst=self.dst.isConst))
+                    assign = UnitOPCode(
+                        type = Assign,
+                        dst = LocalVariableCode(
+                            address=address,
+                            type=res.dst.type
+                        )
+                    )
+                    code.append(assign)
+                    return NodeVisitorReturn(code)
+                else:
+                    raise(Error(f'variable {self.dst.name}\'s type not match'))
+            else:
+                raise(Error('unknown'))
+        else:
+            if self.dst.isConst:
+                raise(Error(f'const variable {self.dst.name} is not initialized'))    
+            varCnt += 1
+            context.symbols.add(Variable( id=varCnt,name = self.dst.name,type=self.dst.type,isConst=self.dst.isConst))
+            return NodeVisitorReturn([])
+
+class DefineListASTNode(BasicASTNode):
+    def __init__(self) -> None:
+        super().__init__(DefineListType)
+        self.defs:list[DefineASTNode] = []
+        self.isConst = False
+    
+    def merge(self,other):
+        self.defs += other.defs
+    
+    def visit(self, context: Context) -> NodeVisitorReturn:
+        code:list[ThreeAddressCode] = []
+        for defn in self.defs:
+            code += defn.visit(context).code
+        return NodeVisitorReturn(code)
+
+
+
+class ForStatementASTNode(BasicASTNode):
+    def __init__(self, init, condition, update, body) -> None:
+        super().__init__(ForStatementType)
+        self.init:Union[DefineListASTNode,list[UnitOPASTNode]] = init
+        self.condition: ValueASTNode = condition
+        self.update: list[UnitOPASTNode] = update
+        self.body: StatementASTNode = body
+    
+    def visit(self, context: Context) -> NodeVisitorReturn:
+        sTable = SymbolTable()
+        sTable.father = context.symbols
+        context = Context(symbols=sTable,globalFns=context.globalFns,fnName=context.fnName)
+        code:list[ThreeAddressCode] = []
+        if hasattr(self.init,'type'):
+            initRes = self.init.visit(context)
+            code += initRes.code
+        else:
+            for assign in self.init:
+                assignRes = assign.visit(context)
+                code += assignRes
+        initLen = len(code)
+        condRes = self.condition.visit(context)
+        if condRes.dst is not None:
+            code += condRes.code
+            ifFalseGoto = IfGotoCode(
+                type = ThreeAddressCodeType.IfGoto,
+                src = condRes.dst,
+                offset = len(code),
+                target = False
+            )
+            code.append(ifFalseGoto)
+            bodyRes = self.body.visit(context)
+            code += bodyRes.code
+            updateCode:list[ThreeAddressCode] = []
+            for it in self.update:
+                updateCode += it.visit(context=context).code
+            code += updateCode
+            gotoInit = GotoCode(
+                type=ThreeAddressCodeType.Goto,
+                offset= initLen - len(code) - 1
+            )
+            code.append(gotoInit)
+            ifFalseGoto.offset = len(code) - ifFalseGoto.offset - 1
+            return NodeVisitorReturn(code)
+        else:
+            raise(Error('void error'))
+class StatementListASTNode(BasicASTNode):
+    def __init__(self, createContext = False) -> None:
+        super().__init__(StatementListType)
+        self.createContext = createContext
+
+class IfStatementASTNode(BasicASTNode):
+    pass
+
+class WhileStatementASTNode(BasicASTNode):
+    pass
+
+StatementASTNode = Union[StatementListASTNode,ValueASTNode,DefineListASTNode,FunctionReturnASTNode,IfStatementASTNode,WhileStatementASTNode,ForStatementASTNode]
+
 
 class FunctionASTNode(BasicASTNode):
     def __init__(self, name,args,returnType,statements) -> None:
