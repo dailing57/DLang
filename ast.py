@@ -1,4 +1,6 @@
 from typing import Union
+
+from scipy.fft import dst
 from type import *
 from symbolTable import SymbolTable
 from tac import *
@@ -237,54 +239,6 @@ class FunctionCallASTNode(BasicASTNode):
 
 ValueASTNode = Union[BinOPASTNode,UnitOPASTNode,LeafASTNode,FunctionCallASTNode]
 
-class RootASTNode(BasicASTNode):
-    def __init__(self) -> None:
-        super().__init__(RootType)
-        self.fns:list[FunctionASTNode] = []
-        self.main:FunctionASTNode = None
-    def merge(self,other):
-        for it in other.fns:
-            self.fns.append(it)
-        if other.main is not None:
-            self.main = other.main
-    def visit(self,context: Context):
-        if self.main is not None:
-            raise Error('main function is not defined')
-        context.globalFns[Main] = GlobalFunction(
-            type=voidType,
-            args=self.main.getArgsType(),
-            address=1,
-            memCount=0,
-            name=Main
-        )
-        for fn in self.fns:
-            context.globalFns[fn.name] = GlobalFunction(
-                type = fn.returnType,
-                args = fn.getArgsType(),
-                address = -1,
-                memCount = 0,
-                name= fn.name
-            )
-        start = FunctionCallCode(
-            type=ThreeAddressCodeType.FunctionCall,
-            name=Main
-        )
-        code:list[ThreeAddressCode] = [start]
-        code += self.main.visit(context).code
-        global varCnt
-        context.globalFns[Main].memCount = varCnt
-        for fn in self.fns:
-            context.fnName = fn.name
-            varCnt = 0
-            code.append(ThreeAddressCodeType.NOP)
-            res = fn.visit(context)
-            fnObj = context.globalFns[fn.name]
-            fnObj.address = len(code)
-            fnObj.memCount = varCnt
-            code += res.code
-        return NodeVisitorReturn(code)
-
-
 class ArgDefineListASTNode(BasicASTNode):
     def __init__(self, type) -> None:
         super().__init__(ArgDefineListType)
@@ -442,30 +396,198 @@ class ForStatementASTNode(BasicASTNode):
             raise(Error('void error'))
 
 class WhileStatementASTNode(BasicASTNode):
-    pass
-
-class IfStatementASTNode(BasicASTNode):
-    pass
+    def __init__(self, condition, body) -> None:
+        super().__init__(WhileStatementType)
+        self.condition:ValueASTNode = condition
+        self.body:StatementASTNode = body
+    
+    def visit(self, context: Context) -> NodeVisitorReturn:
+        code:list[ThreeAddressCode] = []
+        condRes = self.condition.visit(context=context)
+        code += condRes.code
+        if condRes.dst is not None:
+            ifFalseGoto = IfGotoCode(
+                type=ThreeAddressCodeType.IfGoto,
+                src=condRes.dst,
+                target= False,
+                offset= len(code)
+            )
+            code.append(ifFalseGoto)
+            bodyRes = self.body.visit(context=context)
+            code += bodyRes.code
+            code.append(GotoCode(type=ThreeAddressCodeType.Goto,offset=-len(code)-1))
+        else:
+            raise(Error('void error'))
+        return NodeVisitorReturn(code)
 
 class StatementListASTNode(BasicASTNode):
     def __init__(self, createContext = False) -> None:
         super().__init__(StatementListType)
         self.createContext = createContext
+        self.statements:list[StatementASTNode] = []
+        self.haveReturn = False
+    
+    def merge(self,other):
+        if other.haveReturn:
+            self.haveReturn = True
+        if other.createContext:
+            self.statements.append(other)
+        else:
+            for it in other.statements:
+                self.statements.append(it)
+    
+    def visit(self, context: Context) -> NodeVisitorReturn:
+        if self.createContext:
+            sTable = SymbolTable()
+            sTable.father = context.symbols
+            context = Context(symbols=sTable,globalFns=context.globalFns,fnName = context.fnName)
+        code:list[ThreeAddressCode] = []
+        for stat in self.statements:
+            code += stat.visit(context).code
+            if stat.type == FunctionReturnType:
+                break
+            elif stat.type == IfStatementType and stat.haveReturn():
+                break
+        return NodeVisitorReturn(code)
+
+class IfStatementASTNode(BasicASTNode):
+    def __init__(self, condition, body, elseBody=None) -> None:
+        super().__init__(IfStatementType)
+        self.condition:ValueASTNode = condition
+        self.body:StatementASTNode = body
+        self.elseBody: StatementASTNode = elseBody
+    
+    def haveReturn(self):
+        if self.elseBody is not None:
+            if (self.body.type == FunctionReturnType and
+                self.body.src is not None) or (
+                self.body.type == StatementListType and
+                self.body.haveReturn
+            ):
+                if (self.elseBody.type == FunctionReturnType and 
+                    self.body.src is not None) or (
+                    self.elseBody.type == StatementListType and 
+                    self.elseBody.haveReturn
+                ):
+                    return True
+        return False
+
+    def visit(self, context: Context) -> NodeVisitorReturn:
+        code:list[ThreeAddressCode] = []
+        condRes = self.condition.visit(context)
+        code += condRes.code
+        if condRes.dst is not None:
+            ifFalseGoto = IfGotoCode(
+                type=ThreeAddressCodeType.IfGoto,
+                src=condRes.dst,
+                target=False,
+                offset=len(code)
+            )
+            code.append(ifFalseGoto)
+            bodyRes = self.body.visit(context)
+            code += bodyRes.code
+            if self.elseBody is not None:
+                trueGoto = GotoCode(
+                    type = ThreeAddressCodeType.Goto,
+                    offset=len(code)
+                )
+                code.append(trueGoto)
+                ifFalseGoto.offset = len(code) - trueGoto.offset -1
+                elseRes = self.elseBody.visit(context=context)
+                code += elseRes.code
+                trueGoto.offset = len(code) - trueGoto.offset -1
+            else:
+                ifFalseGoto.offset = len(code) - ifFalseGoto.offset - 1
+        else:
+            raise(Error('void error'))
+        return NodeVisitorReturn(code)
 
 StatementASTNode = Union[StatementListASTNode,ValueASTNode,DefineListASTNode,FunctionReturnASTNode,IfStatementASTNode,WhileStatementASTNode,ForStatementASTNode]
 
 
 class FunctionASTNode(BasicASTNode):
-    def __init__(self, name,args,returnType,statements) -> None:
+    def __init__(self, name,args,returnType,statements: StatementListASTNode) -> None:
         super().__init__(FunctionDef)
         self.name = name
         self.args: ArgDefineListASTNode = args
         self.returnType = returnType
-        self.statements: list[StatementListASTNode] = []
+        self.statements:list[StatementASTNode] = []
         for it in statements.statements:
             self.statements.append(it)
         self.haveReturn = statements.haveReturn
     def getArgsType(self):
-        pass
+        return self.args.defs
+    
+    def visit(self, context: Context) -> NodeVisitorReturn:
+        if self.returnType == voidType:
+            if self.haveReturn:
+                raise(Error(f'function "{self.name}" should return void'))
+            else:
+                if not self.haveReturn:
+                    raise(Error(f'function "{self.name}" does not have Return statement'))
+        sTable = SymbolTable()
+        sTable.father = context.symbols
+        context = Context(symbols=sTable,globalFns=context.globalFns,fnName=context.fnName)
+        self.args.visit(context)
 
+        code:list[ThreeAddressCode] = []
+        for stat in self.statements:
+            code == stat.visit(context=context).code
+            if stat.type == FunctionReturnType:
+                break
+            elif stat.type == IfStatementType and stat.haveReturn():
+                break
+        
+        if not self.haveReturn:
+            code.append(FunctionReturnCode(
+                type=ThreeAddressCodeType.FunctionReturn,
+                name=self.name
+            ))
+        return NodeVisitorReturn(code)
 
+class RootASTNode(BasicASTNode):
+    def __init__(self) -> None:
+        super().__init__(RootType)
+        self.fns:list[FunctionASTNode] = []
+        self.main:FunctionASTNode = None
+    def merge(self,other):
+        for it in other.fns:
+            self.fns.append(it)
+        if other.main is not None:
+            self.main = other.main
+    def visit(self,context: Context):
+        if self.main is not None:
+            raise Error('main function is not defined')
+        context.globalFns[Main] = GlobalFunction(
+            type=voidType,
+            args=self.main.getArgsType(),
+            address=1,
+            memCount=0,
+            name=Main
+        )
+        for fn in self.fns:
+            context.globalFns[fn.name] = GlobalFunction(
+                type = fn.returnType,
+                args = fn.getArgsType(),
+                address = -1,
+                memCount = 0,
+                name= fn.name
+            )
+        start = FunctionCallCode(
+            type=ThreeAddressCodeType.FunctionCall,
+            name=Main
+        )
+        code:list[ThreeAddressCode] = [start]
+        code += self.main.visit(context).code
+        global varCnt
+        context.globalFns[Main].memCount = varCnt
+        for fn in self.fns:
+            context.fnName = fn.name
+            varCnt = 0
+            code.append(ThreeAddressCodeType.NOP)
+            res = fn.visit(context)
+            fnObj = context.globalFns[fn.name]
+            fnObj.address = len(code)
+            fnObj.memCount = varCnt
+            code += res.code
+        return NodeVisitorReturn(code)
