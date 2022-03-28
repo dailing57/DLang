@@ -1,6 +1,9 @@
-class A:
-    def __init__(self) -> None:
-        self.a=0
-        self.b=1
-a = A()
-print(*a)
+from DLex import *
+from DLex import ReParser
+from lex import LexConfig, KeyWord
+
+lp = ReParser.LexParser(LexConfig,True,keword=KeyWord)
+code = open('./test/codeRe', 'r')
+tokens = lp.parse(code)
+for it in tokens:
+    print(it)

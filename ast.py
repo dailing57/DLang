@@ -1,6 +1,4 @@
 from typing import Union
-
-from scipy.fft import dst
 from type import *
 from symbolTable import SymbolTable
 from tac import *

@@ -1,38 +1,8 @@
 from typing import Union
-# ValueType
-
-stringType  = 'stringType'
-numberType  = 'numberType'
-floatType   = 'floatType'
-boolType    = 'boolType'
-voidType    = 'voidType'
-
-# CmpOPType
-NotEqual    = 'NotEqual'
-Equal       = 'Equal'
-LessThan    = 'LessThan'
-MoreThan    = 'MoreThan'
-LessOrEqual = 'LessOrEqual'
-MoreOrEqual = 'MoreOrEqual'
-
-# BinOPType
-Plus        = 'Plus'
-Minus       = 'Minus'
-Mul         = 'Mul'
-Div         = 'Div'
-Mod         = 'Mod'
-Negative    = 'Negative'
-Not         = 'Not'
-And         = 'And'
-Or          = 'Or'
-
-# UnitOPType
-Negative    = 'Negative'
-Not         = 'Not'
-Assign      = 'Assign'
+from lex import *
 
 # VoidType
-VoidType    = 'voidType'
+voidType    = 'voidType'
 
 Main        = 'main'
 FunctionDef = 'FunctionDef'
