@@ -40,6 +40,7 @@ StatementProduction = [
                     Fn,
                     Identifier,
                     LRound,
+                    ARGDEFINEList,
                     RRound,
                     RETURNTYPE,
                     LBrace,
@@ -48,6 +49,88 @@ StatementProduction = [
                     PROGRAM
                 ],
                 reduce = functionOverall
+            ),
+            ProductionRightRule(
+                rule=[
+                    Fn,
+                    Main,
+                    LRound,
+                    ARGDEFINEList,
+                    RRound,
+                    LBrace,
+                    STATEMENTList,
+                    RBrace
+                ],
+                reduce= mainOverall
+            )
+        ]
+    ),
+    ProductionRule(
+        left=RETURNTYPE,
+        right=[
+            ProductionRightRule(
+                rule=[ToArrow,TYPES],
+                reduce=returnType
+            ),
+            ProductionRightRule(
+                rule=[],
+                reduce=returnVoid
+            )
+        ]
+    ),
+    ProductionRule(
+        left=ARGDEFINEList,
+        right=[
+            ProductionRightRule(
+                rule=[ARGDEFINE,Comma,ARGDEFINEList],
+                reduce=argDefineList
+            ),
+            ProductionRightRule(
+                rule=[ARGDEFINE],
+                reduce=argDefine
+            ),
+            ProductionRightRule(
+                rule=[],
+                reduce=nullArgDefine
+            )
+        ]
+    ),
+    ProductionRule(
+        left=ARGDEFINE,
+        right=[
+            ProductionRightRule(
+                rule=[Identifier,Colon,TYPES],
+                reduce=argDefineType
+            )
+        ]
+    ),
+    ProductionRule(
+        left=STATEMENTList,
+        right=[
+            ProductionRightRule(
+                rule=[STATEMENT,STATEMENTList],
+                reduce=statementList
+            ),
+            ProductionRightRule(
+                rule=[OPENSTATEMENT,STATEMENTList],
+                reduce=statementOpen
+            ),
+            ProductionRightRule(
+                rule=[],
+                reduce=statementEmpty
+            )
+        ]
+    ),
+    ProductionRule(
+        left=STATEMENT,
+        right=[
+            ProductionRightRule(
+                rule=[Let,DEFINEList,Semicolon],
+                reduce=statement
+            ),
+            ProductionRightRule(
+                rule = [Const,DEFINEList,Semicolon],
+                reduce=statementConst
             )
         ]
     )
