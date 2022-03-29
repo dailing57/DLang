@@ -1,5 +1,6 @@
 from .ast import *
 def functionOverall(fn,value,L,argList:ArgDefineListASTNode,R,type,LB,body:StatementListASTNode,RB,rest:RootASTNode):
+    value = getattr(value,'value')
     body.createContext = True
     fnNode = FunctionASTNode(value,argList,type,body)
     root = RootASTNode()
@@ -62,6 +63,7 @@ def genVariable(type=None,name=None):
         )
 
 def argDefineType(value,colon,type):
+    value = getattr(value,'value')    
     arg = genVariable(type,value)
     arg.isArg = True
     return arg
@@ -96,3 +98,81 @@ def statementConst(ct,dList:DefineListASTNode,Semi):
     for it in dList.defs:
         it.dst.isConst = True
     return dList
+
+def statementAssign(value,assign,expr,semi):
+    value = getattr(value,'value')
+    return UnitOPASTNode(
+        type=Assign,
+        dst = genVariable(None,value),
+        src = expr
+    )
+
+def statementBrace(l,list:StatementListASTNode,r):
+    list.createContext = True
+    return list
+
+def statementExpr(node:ValueASTNode,semi):
+    return node
+
+def statementFunctionReturn(node:FunctionReturnASTNode,semi):
+    return node
+
+def statementIfElse(f,l,expr:ValueASTNode,r,body:StatementASTNode,el,elseBody:StatementASTNode):
+    return IfStatementASTNode(expr,body,elseBody=elseBody)
+
+def statementWhile(whl,l,expr:ValueASTNode,r,body:StatementASTNode):
+    return WhileStatementASTNode(expr,body)
+
+def statementFor(f,L,init,s1,condExpr:ValueASTNode,s2,assignList:list[UnitOPASTNode],R,body:StatementASTNode):
+    return ForStatementASTNode(init,condExpr,assignList,body)
+
+def ForInitLet(lt,list:DefineListASTNode):
+    return list
+
+def ForInitAssignList(list:list[UnitOPASTNode]):
+    return list
+
+def ForAssignEmpty():
+    return []
+
+def ForAssignList(value,ag,expr:ValueASTNode,other:list[UnitOPASTNode]):
+    value = getattr(value,'value')
+    return [UnitOPASTNode(Assign,genVariable(None,value),expr),*other]
+
+def ForIdAssign(value,ag,expr:ValueASTNode):
+    value = getattr(value,'value')
+    return UnitOPASTNode(Assign,genVariable(None,value),expr)
+
+def openStatementS(f,l,expr:ValueASTNode,r,body:StatementASTNode):
+    return IfStatementASTNode(expr,body=body)
+
+def openStatementIfEl(f,l,expr:ValueASTNode,r,body:StatementASTNode,el,elseBody:StatementASTNode):
+    return IfStatementASTNode(expr,body=body,elseBody=elseBody)
+
+def functionReturnEmpty():
+    return FunctionReturnASTNode()
+
+def functionExpr(ret,expr:ValueASTNode):
+    rNode = FunctionReturnASTNode()
+    rNode.src = expr
+    return rNode
+
+def returnType(type):
+    return type
+
+def defineId(value):
+    value = getattr(value,'value')
+    return DefineASTNode(genVariable(None,value))
+
+def defineIdType(value,colon,type):
+    value = getattr(value,'value')
+    return DefineASTNode(genVariable(type,value))
+
+def defineAssign(value,colon,expr:ValueASTNode):
+    value = getattr(value,'value')
+    return DefineASTNode(genVariable(expr.dst.type,value),expr)
+
+def defineAssignT(value,colon,type,expr):
+    value = getattr(value,'value')
+    return DefineASTNode(genVariable(type,value),expr)
+

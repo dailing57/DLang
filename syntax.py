@@ -1,3 +1,4 @@
+from turtle import left
 from lex import *
 from type import *
 from ast import *
@@ -131,7 +132,159 @@ StatementProduction = [
             ProductionRightRule(
                 rule = [Const,DEFINEList,Semicolon],
                 reduce=statementConst
+            ),
+            ProductionRightRule(
+                rule=[Identifier,Assign,EXPR,Semicolon],
+                reduce=statementAssign
+            ),
+            ProductionRightRule(
+                rule = [LBrace,STATEMENTList,RBrace],
+                reduce=statementBrace
+            ),
+            ProductionRightRule(
+                rule=[EXPR,Semicolon],
+                reduce=statementExpr
+            ),
+            ProductionRightRule(
+                rule=[FUNCTIONRETURN,Semicolon],
+                reduce=statementFunctionReturn
+            ),
+            ProductionRightRule(
+                rule = [
+                    If,
+                    LRound,
+                    LOGICALEXPR,
+                    RRound,
+                    STATEMENT,
+                    Else,
+                    STATEMENT
+                ],
+                reduce=statementIfElse
+            ),
+            ProductionRightRule(
+                rule = [While,LRound,LOGICALEXPR,RRound,STATEMENT],
+                reduce=statementWhile
+            ),
+            ProductionRightRule(
+                rule = [
+                    For,
+                    LRound,
+                    FORInit,
+                    Semicolon,
+                    LOGICALEXPR,
+                    Semicolon,
+                    FORASSIGNList,
+                    RRound,
+                    STATEMENT
+                ],
+                reduce=statementFor
             )
+        ]
+    ),
+    ProductionRule(
+        left=FORInit,
+        right=[
+            ProductionRightRule(
+                rule=[Let,DEFINEList],
+                reduce=ForInitLet
+            ),
+            ProductionRightRule(
+                rule=[FORASSIGNList],
+                reduce=ForInitAssignList
+            )
+        ]
+    ),
+    ProductionRule(
+        left=FORASSIGNList,
+        right=[
+            ProductionRightRule(
+                rule=[],
+                reduce=ForAssignEmpty
+            ),
+            ProductionRightRule(
+                rule=[Identifier,Assign,EXPR,Comma,FORASSIGNList],
+                reduce=ForAssignList
+            ),
+            ProductionRightRule(
+                rule=[Identifier,Assign,EXPR],
+                reduce=ForIdAssign
+            )
+        ]
+    ),
+    ProductionRule(
+        left=OPENSTATEMENT,
+        right=[
+            ProductionRightRule(
+                rule=[If,LRound,LOGICALEXPR,RRound,STATEMENT],
+                reduce=openStatementS
+            ),
+            ProductionRightRule(
+                rule=[If,LRound,LOGICALEXPR,RRound,OPENSTATEMENT],
+                reduce=openStatementS
+            ),
+            ProductionRightRule(
+                rule=[If,LRound,LOGICALEXPR,RRound,STATEMENT,Else,OPENSTATEMENT],
+                reduce=openStatementIfEl
+            )
+        ]
+    ),
+    ProductionRule(
+        left=FUNCTIONRETURN,
+        right=[
+            ProductionRightRule(
+                left=[Return],
+                reduce=functionReturnEmpty
+            ),
+            ProductionRightRule(
+                left=[Return,EXPR],
+                reduce=functionExpr
+            ),
+            ProductionRightRule(
+                left=[Return,LOGICALEXPR],
+                reduce=functionExpr
+            )
+        ]
+    ),
+    ProductionRule(
+        left=TYPES,
+        right=[
+            ProductionRightRule(
+                rule=[numberType],
+                reduce=returnType
+            ),
+            ProductionRightRule(
+                rule=[floatType],
+                reduce=returnType
+            ),
+            ProductionRightRule(
+                rule=[stringType],
+                reduce=returnType
+            ),
+            ProductionRightRule(
+                rule=[boolType],
+                reduce=returnType
+            ),
+        ]
+    ),
+    ProductionRule(
+        left=DEFINE,
+        right=[
+            ProductionRightRule(
+                rule=[Identifier],
+                reduce=defineId
+            ),
+            ProductionRightRule(
+                rule=[Identifier,Colon,TYPES],
+                reduce=defineIdType
+            ),
+            ProductionRightRule(
+                rule=[Identifier,Assign,EXPR],
+                reduce=defineAssign
+            ),
+            ProductionRightRule(
+                rule=[Identifier,Colon,TYPES,Assign,EXPR],
+                reduce=defineAssignT
+            ),
         ]
     )
 ]
