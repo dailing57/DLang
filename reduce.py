@@ -1,6 +1,6 @@
 from .ast import *
 def functionOverall(fn,value,L,argList:ArgDefineListASTNode,R,type,LB,body:StatementListASTNode,RB,rest:RootASTNode):
-    value = getattr(value,'value')
+    value = value.value
     body.createContext = True
     fnNode = FunctionASTNode(value,argList,type,body)
     root = RootASTNode()
@@ -63,7 +63,7 @@ def genVariable(type=None,name=None):
         )
 
 def argDefineType(value,colon,type):
-    value = getattr(value,'value')    
+    value = value.value    
     arg = genVariable(type,value)
     arg.isArg = True
     return arg
@@ -100,7 +100,7 @@ def statementConst(ct,dList:DefineListASTNode,Semi):
     return dList
 
 def statementAssign(value,assign,expr,semi):
-    value = getattr(value,'value')
+    value = value.value
     return UnitOPASTNode(
         type=Assign,
         dst = genVariable(None,value),
@@ -136,11 +136,11 @@ def ForAssignEmpty():
     return []
 
 def ForAssignList(value,ag,expr:ValueASTNode,other:list[UnitOPASTNode]):
-    value = getattr(value,'value')
+    value = value.value
     return [UnitOPASTNode(Assign,genVariable(None,value),expr),*other]
 
 def ForIdAssign(value,ag,expr:ValueASTNode):
-    value = getattr(value,'value')
+    value = value.value
     return UnitOPASTNode(Assign,genVariable(None,value),expr)
 
 def openStatementS(f,l,expr:ValueASTNode,r,body:StatementASTNode):
@@ -161,18 +161,94 @@ def returnType(type):
     return type
 
 def defineId(value):
-    value = getattr(value,'value')
+    value = value.value
     return DefineASTNode(genVariable(None,value))
 
 def defineIdType(value,colon,type):
-    value = getattr(value,'value')
+    value = value.value
     return DefineASTNode(genVariable(type,value))
 
 def defineAssign(value,colon,expr:ValueASTNode):
-    value = getattr(value,'value')
+    value = value.value
     return DefineASTNode(genVariable(expr.dst.type,value),expr)
 
 def defineAssignT(value,colon,type,expr):
-    value = getattr(value,'value')
+    value = value.value
     return DefineASTNode(genVariable(type,value),expr)
 
+def defineList(d:DefineASTNode,comma,other:DefineListASTNode):
+    dlist = DefineListASTNode()
+    dlist.defs.append(d)
+    dlist.merge(other)
+    return dlist
+
+def defineListE(d:DefineASTNode):
+    dlist = DefineListASTNode()
+    dlist.defs.append(d)
+    return dlist
+
+def genLiteral(type,value):
+    return Literal(type,value)
+
+def plus(term:ValueASTNode,p,expr:ValueASTNode):
+    type = getBinOPType(Plus,term.dst.type,expr.dst.type)
+    return BinOPASTNode(Plus,genVariable(type),term,expr)
+
+def minus(term:ValueASTNode,m,expr:ValueASTNode):
+    type = getBinOPType(Minus,term.dst.type,expr.dst.type)
+    return BinOPASTNode(Minus,genVariable(type),term,expr)
+
+def ExprTerm(node):
+    return node
+
+def termMul(factor:ValueASTNode,mul,term:ValueASTNode):
+    type = getBinOPType(Mul,factor.dst.type,term.dst.type)
+    return BinOPASTNode(Mul,genVariable(type),type,term)
+
+def termDiv(factor:ValueASTNode,div,term:ValueASTNode):
+    type = getBinOPType(Div,factor.dst.type,term.dst.type)
+    return BinOPASTNode(Div,genVariable(type),type,term)
+
+def termMod(factor:ValueASTNode,mod,term:ValueASTNode):
+    type = getBinOPType(Mod,factor.dst.type,term.dst.type)
+    return BinOPASTNode(Mod,genVariable(type),type,term)
+
+def factorPlus(p,node):
+    return node
+
+def factorminus(m,node:ValueASTNode):
+    return UnitOPASTNode(Negative,genVariable(node.dst.type),node)
+
+def factornot(m,node:ValueASTNode):
+    return UnitOPASTNode(Not,genVariable(node.dst.type),node)
+
+def rightVal(node):
+    return node
+
+def roundexpr(l,node,r):
+    return node
+
+def exprminus(m,l,node:ValueASTNode,r):
+    return UnitOPASTNode(Negative,genVariable(node.dst.type),node)
+
+def exprnot(n,l,node:ValueASTNode,r):
+    return UnitOPASTNode(Not,genVariable(node.dst.type),node)
+
+def functionCall(value,l,args:FunctionCallArgListASTNode,r):
+    fnCall = FunctionCallASTNode(value.value,args)
+    return fnCall
+
+def functionCallNamespace(namespace,dc,value,l,args:FunctionCallArgListASTNode,r):
+    fnCall = FunctionCallASTNode(namespace.value+'::'+value.value,args=args)
+    return fnCall
+
+def callArgList(expr:ValueASTNode,comma,rest:FunctionCallArgListASTNode):
+    fnalist = FunctionCallArgListASTNode()
+    fnalist.args.append(expr)
+    fnalist.merge(rest)
+    return fnalist
+
+def callArgListEnd(expr:ValueASTNode):
+    fnalist = FunctionCallArgListASTNode()
+    fnalist.args.append(expr)
+    return fnalist

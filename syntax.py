@@ -1,4 +1,3 @@
-from turtle import left
 from lex import *
 from type import *
 from ast import *
@@ -286,5 +285,276 @@ StatementProduction = [
                 reduce=defineAssignT
             ),
         ]
+    ),
+    ProductionRule(
+        left=DEFINEList,
+        right=[
+            ProductionRightRule(
+                rule=[DEFINE,Comma,DEFINEList],
+                reduce=defineList
+            ),
+            ProductionRightRule(
+                rule=[DEFINE],
+                reduce=defineListE
+            )
+        ]
     )
 ]
+
+ExprProduction = [
+    ProductionRule(
+        left = EXPR,
+        right=[
+            ProductionRightRule(
+                rule=[Term,Plus,EXPR],
+                reduce=plus
+            ),
+            ProductionRightRule(
+                rule=[Term,Minus,EXPR],
+                reduce=minus
+            ),
+            ProductionRightRule(
+                rule=[Term],
+                reduce=ExprTerm
+            )
+        ]
+    ),
+    ProductionRule(
+        left=Term,
+        right=[
+            ProductionRightRule(
+                rule=[Factor,Mul,Term],
+                reduce=termMul
+            ),
+            ProductionRightRule(
+                rule=[Factor,Div,Term],
+                reduce=termDiv
+            ),
+            ProductionRightRule(
+                rule=[Factor,Mod,Term],
+                reduce=termMod
+            ),
+            ProductionRightRule(
+                rule=[Factor],
+                reduce=ExprTerm
+            )
+        ]
+    ),
+    Production(
+        left=Factor,
+        right=[
+            ProductionRightRule(
+                rule=[Plus,RightValue],
+                reduce=factorPlus
+            ),
+            ProductionRightRule(
+                rule=[Minus,RightValue],
+                reduce=factorminus
+            ),
+            ProductionRightRule(
+                rule=[Not,RightValue],
+                reduce=factornot
+            ),
+            ProductionRightRule(
+                rule=[Not,RightValue],
+                reduce=factornot
+            ),
+            ProductionRightRule(
+                rule=[RightValue],
+                reduce=rightVal
+            ),
+            ProductionRightRule(
+                rule=[LRound,EXPR,RRound],
+                reduce=roundexpr
+            ),
+            ProductionRightRule(
+                rule=[Plus,LRound,EXPR,RRound],
+                reduce=(lambda p, l,node, r:node)
+            ),
+            ProductionRightRule(
+                rule=[Minus,LRound,EXPR,RRound],
+                reduce=exprminus
+            ),
+            ProductionRightRule(
+                rule=[Not,LRound,EXPR,RRound],
+                reduce=exprnot
+            )
+        ]
+    ),
+    ProductionRule(
+        left=RightValue,
+        right=[
+            ProductionRightRule(
+                rule=[Number],
+                reduce=(lambda tk:LeafASTNode(genLiteral(numberType, tk.value)))
+            ),
+            ProductionRightRule(
+                rule=[true],
+                reduce=(lambda tk:LeafASTNode(genLiteral(boolType, True)))
+            ),
+            ProductionRightRule(
+                rule=[false],
+                reduce=(lambda tk:LeafASTNode(genLiteral(boolType, False)))
+            ),
+            ProductionRightRule(
+                rule=[Float],
+                reduce=(lambda tk:LeafASTNode(genLiteral(floatType, tk.value)))
+            ),
+            ProductionRightRule(
+                rule=[String],
+                reduce=(lambda tk:LeafASTNode(genLiteral(stringType, tk.value)))
+            ),
+            ProductionRightRule(
+                rule=[Identifier],
+                reduce=(lambda tk:LeafASTNode(genVariable(None, tk.value)))
+            ),
+            ProductionRightRule(
+                rule=[FUNCTIONCALL],
+                reduce=(lambda call:call)
+            )
+        ]
+    ),
+    ProductionRule(
+        left=FUNCTIONCALL,
+        right=[
+            ProductionRightRule(
+                rule=[Identifier,LRound,CALLARGList,RRound],
+                reduce=functionCall
+            ),
+            ProductionRightRule(
+                rule=[
+                    Identifier,
+                    DoubleColon,
+                    Identifier,
+                    LRound,
+                    CALLARGList,
+                    RRound
+                ],
+                reduce=functionCallNamespace
+            )
+        ]
+    ),
+    ProductionRule(
+        left=CALLARGList,
+        right=[
+            ProductionRightRule(
+                rule=[EXPR,Comma,CALLARGList],
+                reduce=callArgList
+            ),
+            ProductionRightRule(
+                rule=[EXPR],
+                reduce=callArgListEnd
+            ),
+            ProductionRightRule(
+                rule=[],
+                reduce=(lambda : FunctionCallArgListASTNode())
+            )
+        ]
+    )
+]
+
+LogicalProduction = [
+    ProductionRule(
+        left=LOGICALEXPR,
+        right=[
+            ProductionRightRule(
+                rule=[LOGICALEXPR],
+                reduce=(lambda expr:expr)
+            ),
+            ProductionRightRule(
+                rule=[LOGICALAND, Or, LOGICALEXPR],
+                reduce=(lambda cmp,Or,expr:BinOPASTNode(Or, genVariable(boolType), cmp, expr))
+            )
+        ]
+    ),
+    ProductionRule(
+        left=LOGICALAND,
+        right=[
+            ProductionRightRule(
+                rule=[CMP],
+                reduce=(lambda cmp:cmp),
+            ),
+            ProductionRightRule(
+                rule=[CMP,And,LOGICALAND],
+                reduce=(lambda cmp,expr:BinOPASTNode(And, genVariable(boolType), cmp, expr))
+            )
+        ],
+    ),
+    ProductionRule(
+        left=CMP,
+        right=[
+            ProductionRightRule(
+                rule=[EXPR, CMPToken, EXPR],
+                reduce=(lambda lexpr,type,rexpr:BinOPASTNode(type, genVariable(boolType), lexpr, rexpr)),
+            ),
+            ProductionRightRule(
+                rule=[LRound, LOGICALEXPR, RRound],
+                reduce=(lambda l,expr,r: expr)
+            )
+        ],
+    ),
+    ProductionRule(
+        left = CMPToken,
+        right=[
+            ProductionRightRule(
+                rule=[Equal],
+                reduce=(lambda tk:tk.type)
+            ),
+            ProductionRightRule(
+                rule=[NotEqual],
+                reduce=(lambda tk:tk.type)
+            ),
+            ProductionRightRule(
+                rule=[LessThan],
+                reduce=(lambda tk:tk.type)
+            ),
+            ProductionRightRule(
+                rule=[MoreThan],
+                reduce=(lambda tk:tk.type)
+            ),
+            ProductionRightRule(
+                rule=[LessOrEqual],
+                reduce=(lambda tk:tk.type)
+            ),
+            ProductionRightRule(
+                rule=[MoreOrEqual],
+                reduce=(lambda tk:tk.type)
+            )
+        ]
+    )
+]
+
+tks = []
+for it in LexConfig:
+    tks.append(it)
+
+config = ParserConfig(
+    tokens=[*tks,*KeyWord],
+    types= [
+        PROGRAM,
+        STATEMENTList,
+        STATEMENT,
+        OPENSTATEMENT,
+        TYPES,
+        ARGDEFINE,
+        ARGDEFINEList,
+        FORInit,
+        FORASSIGNList,
+        RETURNTYPE,
+        DEFINE,
+        DEFINEList,
+        EXPR,
+        Term,
+        Factor,
+        RightValue,
+        FUNCTIONCALL,
+        CALLARGList,
+        FUNCTIONRETURN,
+        LOGICALEXPR,
+        LOGICALAND,
+        CMP,
+        CMPToken
+    ],
+    start= PROGRAM,
+    productions= [*StatementProduction, *ExprProduction, *LogicalProduction]
+)
