@@ -78,8 +78,8 @@ class BinOPCode:
     def __init__(self,type,dst,x,y) -> None:
         self.type = type
         self.dst = dst
-        self.x = x
-        self.y = y
+        self.x:Union[VariableCode,LiteralCode] = x
+        self.y:Union[VariableCode,LiteralCode] = y
 
 class UnitOPCode:
     def __init__(self,type,dst,src) -> None:
