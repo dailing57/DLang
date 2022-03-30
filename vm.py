@@ -180,19 +180,49 @@ def vm(code:list[ThreeAddressCode],globalFns:dict[str,GlobalFunction],args:list[
     def TAC_mul(code: ThreeAddressCode):
         x = getValue(code.x)
         y = getValue(code.y)
-        val = code.x.type
         setValue(code.dst,x * y)
 
-    def TAC_LT(code: ThreeAddressCode):
+    def TAC_div(code: ThreeAddressCode):
         x = getValue(code.x)
         y = getValue(code.y)
-        setValue(code.dst,x < y)
+        val = x//y if code.x.type == numberType and code.y.type == numberType else x/y
+        setValue(code.dst,val)
     
+    def TAC_mod(code: ThreeAddressCode):
+        x = getValue(code.x)
+        y = getValue(code.y)
+        setValue(code.dst,x % y)
     
-        
-
     action = {
         ThreeAddressCodeType.NOP: TAC_nop,
         ThreeAddressCodeType.FunctionCall:TAC_functionCall,
-        
+        ThreeAddressCodeType.FunctionReturn:TAC_functionReturn,
+        ThreeAddressCodeType.PushStack:TAC_pushStack,
+        ThreeAddressCodeType.Goto:TAC_goto,
+        ThreeAddressCodeType.IfGoto:TAC_ifGoto,
+        ThreeAddressCodeType.Assign:TAC_Assign,
+        ThreeAddressCodeType.Not:TAC_not,
+        ThreeAddressCodeType.And:TAC_and,
+        ThreeAddressCodeType.Or:TAC_or,
+        ThreeAddressCodeType.Equal:TAC_equal,
+        ThreeAddressCodeType.NotEqual:TAC_notEqual,
+        ThreeAddressCodeType.LessOrEqual:TAC_LE,
+        ThreeAddressCodeType.LessThan:TAC_LT,
+        ThreeAddressCodeType.MoreOrEqual:TAC_GE,
+        ThreeAddressCodeType.MoreThan:TAC_GT,
+        ThreeAddressCodeType.Negative:TAC_Neg,
+        ThreeAddressCodeType.Plus:TAC_plus,
+        ThreeAddressCodeType.Minus:TAC_minus,
+        ThreeAddressCodeType.Mul:TAC_mul,
+        ThreeAddressCodeType.Div:TAC_div,
+        ThreeAddressCodeType.Mod:TAC_mod,
     }
+
+    for arg in args:
+        varStk.append(arg.value)
+    sp = len(varStk)
+    while pc < len(code):
+        action[code[pc].type](code[pc])
+        if len(callStk) == 0:
+            return
+        pc+=1
