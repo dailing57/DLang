@@ -1,2 +1,4 @@
-a = [1,2,3,4,5]
-print(a[-2:])
+from index import DLang
+
+inputCode = open('./test/helloWorld.dl','r')
+DLang.run(DLang.compile(inputCode))

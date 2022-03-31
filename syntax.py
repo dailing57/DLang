@@ -48,7 +48,7 @@ StatementProduction = [
                     RBrace,
                     PROGRAM
                 ],
-                reduce = functionOverall
+                reduce=functionOverall
             ),
             ProductionRightRule(
                 rule=[
@@ -61,7 +61,7 @@ StatementProduction = [
                     STATEMENTList,
                     RBrace
                 ],
-                reduce= mainOverall
+                reduce=mainOverall
             )
         ]
     ),
@@ -69,7 +69,7 @@ StatementProduction = [
         left=RETURNTYPE,
         right=[
             ProductionRightRule(
-                rule=[ToArrow,TYPES],
+                rule=[ToArrow, TYPES],
                 reduce=returnType
             ),
             ProductionRightRule(
@@ -82,7 +82,7 @@ StatementProduction = [
         left=ARGDEFINEList,
         right=[
             ProductionRightRule(
-                rule=[ARGDEFINE,Comma,ARGDEFINEList],
+                rule=[ARGDEFINE, Comma, ARGDEFINEList],
                 reduce=argDefineList
             ),
             ProductionRightRule(
@@ -99,7 +99,7 @@ StatementProduction = [
         left=ARGDEFINE,
         right=[
             ProductionRightRule(
-                rule=[Identifier,Colon,TYPES],
+                rule=[Identifier, Colon, TYPES],
                 reduce=argDefineType
             )
         ]
@@ -108,11 +108,11 @@ StatementProduction = [
         left=STATEMENTList,
         right=[
             ProductionRightRule(
-                rule=[STATEMENT,STATEMENTList],
+                rule=[STATEMENT, STATEMENTList],
                 reduce=statementList
             ),
             ProductionRightRule(
-                rule=[OPENSTATEMENT,STATEMENTList],
+                rule=[OPENSTATEMENT, STATEMENTList],
                 reduce=statementOpen
             ),
             ProductionRightRule(
@@ -125,31 +125,31 @@ StatementProduction = [
         left=STATEMENT,
         right=[
             ProductionRightRule(
-                rule=[Let,DEFINEList,Semicolon],
+                rule=[Let, DEFINEList, Semicolon],
                 reduce=statement
             ),
             ProductionRightRule(
-                rule = [Const,DEFINEList,Semicolon],
+                rule=[Const, DEFINEList, Semicolon],
                 reduce=statementConst
             ),
             ProductionRightRule(
-                rule=[Identifier,Assign,EXPR,Semicolon],
+                rule=[Identifier, Assign, EXPR, Semicolon],
                 reduce=statementAssign
             ),
             ProductionRightRule(
-                rule = [LBrace,STATEMENTList,RBrace],
+                rule=[LBrace, STATEMENTList, RBrace],
                 reduce=statementBrace
             ),
             ProductionRightRule(
-                rule=[EXPR,Semicolon],
+                rule=[EXPR, Semicolon],
                 reduce=statementExpr
             ),
             ProductionRightRule(
-                rule=[FUNCTIONRETURN,Semicolon],
+                rule=[FUNCTIONRETURN, Semicolon],
                 reduce=statementFunctionReturn
             ),
             ProductionRightRule(
-                rule = [
+                rule=[
                     If,
                     LRound,
                     LOGICALEXPR,
@@ -161,11 +161,11 @@ StatementProduction = [
                 reduce=statementIfElse
             ),
             ProductionRightRule(
-                rule = [While,LRound,LOGICALEXPR,RRound,STATEMENT],
+                rule=[While, LRound, LOGICALEXPR, RRound, STATEMENT],
                 reduce=statementWhile
             ),
             ProductionRightRule(
-                rule = [
+                rule=[
                     For,
                     LRound,
                     FORInit,
@@ -184,7 +184,7 @@ StatementProduction = [
         left=FORInit,
         right=[
             ProductionRightRule(
-                rule=[Let,DEFINEList],
+                rule=[Let, DEFINEList],
                 reduce=ForInitLet
             ),
             ProductionRightRule(
@@ -201,11 +201,11 @@ StatementProduction = [
                 reduce=ForAssignEmpty
             ),
             ProductionRightRule(
-                rule=[Identifier,Assign,EXPR,Comma,FORASSIGNList],
+                rule=[Identifier, Assign, EXPR, Comma, FORASSIGNList],
                 reduce=ForAssignList
             ),
             ProductionRightRule(
-                rule=[Identifier,Assign,EXPR],
+                rule=[Identifier, Assign, EXPR],
                 reduce=ForIdAssign
             )
         ]
@@ -214,15 +214,16 @@ StatementProduction = [
         left=OPENSTATEMENT,
         right=[
             ProductionRightRule(
-                rule=[If,LRound,LOGICALEXPR,RRound,STATEMENT],
+                rule=[If, LRound, LOGICALEXPR, RRound, STATEMENT],
                 reduce=openStatementS
             ),
             ProductionRightRule(
-                rule=[If,LRound,LOGICALEXPR,RRound,OPENSTATEMENT],
+                rule=[If, LRound, LOGICALEXPR, RRound, OPENSTATEMENT],
                 reduce=openStatementS
             ),
             ProductionRightRule(
-                rule=[If,LRound,LOGICALEXPR,RRound,STATEMENT,Else,OPENSTATEMENT],
+                rule=[If, LRound, LOGICALEXPR, RRound,
+                      STATEMENT, Else, OPENSTATEMENT],
                 reduce=openStatementIfEl
             )
         ]
@@ -231,15 +232,15 @@ StatementProduction = [
         left=FUNCTIONRETURN,
         right=[
             ProductionRightRule(
-                left=[Return],
+                rule=[Return],
                 reduce=functionReturnEmpty
             ),
             ProductionRightRule(
-                left=[Return,EXPR],
+                rule=[Return, EXPR],
                 reduce=functionExpr
             ),
             ProductionRightRule(
-                left=[Return,LOGICALEXPR],
+                rule=[Return, LOGICALEXPR],
                 reduce=functionExpr
             )
         ]
@@ -273,15 +274,15 @@ StatementProduction = [
                 reduce=defineId
             ),
             ProductionRightRule(
-                rule=[Identifier,Colon,TYPES],
+                rule=[Identifier, Colon, TYPES],
                 reduce=defineIdType
             ),
             ProductionRightRule(
-                rule=[Identifier,Assign,EXPR],
+                rule=[Identifier, Assign, EXPR],
                 reduce=defineAssign
             ),
             ProductionRightRule(
-                rule=[Identifier,Colon,TYPES,Assign,EXPR],
+                rule=[Identifier, Colon, TYPES, Assign, EXPR],
                 reduce=defineAssignT
             ),
         ]
@@ -290,7 +291,7 @@ StatementProduction = [
         left=DEFINEList,
         right=[
             ProductionRightRule(
-                rule=[DEFINE,Comma,DEFINEList],
+                rule=[DEFINE, Comma, DEFINEList],
                 reduce=defineList
             ),
             ProductionRightRule(
@@ -303,14 +304,14 @@ StatementProduction = [
 
 ExprProduction = [
     ProductionRule(
-        left = EXPR,
+        left=EXPR,
         right=[
             ProductionRightRule(
-                rule=[Term,Plus,EXPR],
+                rule=[Term, Plus, EXPR],
                 reduce=plus
             ),
             ProductionRightRule(
-                rule=[Term,Minus,EXPR],
+                rule=[Term, Minus, EXPR],
                 reduce=minus
             ),
             ProductionRightRule(
@@ -323,15 +324,15 @@ ExprProduction = [
         left=Term,
         right=[
             ProductionRightRule(
-                rule=[Factor,Mul,Term],
+                rule=[Factor, Mul, Term],
                 reduce=termMul
             ),
             ProductionRightRule(
-                rule=[Factor,Div,Term],
+                rule=[Factor, Div, Term],
                 reduce=termDiv
             ),
             ProductionRightRule(
-                rule=[Factor,Mod,Term],
+                rule=[Factor, Mod, Term],
                 reduce=termMod
             ),
             ProductionRightRule(
@@ -344,19 +345,19 @@ ExprProduction = [
         left=Factor,
         right=[
             ProductionRightRule(
-                rule=[Plus,RightValue],
+                rule=[Plus, RightValue],
                 reduce=factorPlus
             ),
             ProductionRightRule(
-                rule=[Minus,RightValue],
+                rule=[Minus, RightValue],
                 reduce=factorminus
             ),
             ProductionRightRule(
-                rule=[Not,RightValue],
+                rule=[Not, RightValue],
                 reduce=factornot
             ),
             ProductionRightRule(
-                rule=[Not,RightValue],
+                rule=[Not, RightValue],
                 reduce=factornot
             ),
             ProductionRightRule(
@@ -364,19 +365,19 @@ ExprProduction = [
                 reduce=rightVal
             ),
             ProductionRightRule(
-                rule=[LRound,EXPR,RRound],
+                rule=[LRound, EXPR, RRound],
                 reduce=roundexpr
             ),
             ProductionRightRule(
-                rule=[Plus,LRound,EXPR,RRound],
-                reduce=(lambda p, l,node, r:node)
+                rule=[Plus, LRound, EXPR, RRound],
+                reduce=(lambda p, l, node, r:node)
             ),
             ProductionRightRule(
-                rule=[Minus,LRound,EXPR,RRound],
+                rule=[Minus, LRound, EXPR, RRound],
                 reduce=exprminus
             ),
             ProductionRightRule(
-                rule=[Not,LRound,EXPR,RRound],
+                rule=[Not, LRound, EXPR, RRound],
                 reduce=exprnot
             )
         ]
@@ -386,7 +387,8 @@ ExprProduction = [
         right=[
             ProductionRightRule(
                 rule=[Number],
-                reduce=(lambda tk:LeafASTNode(genLiteral(numberType, tk.value)))
+                reduce=(lambda tk:LeafASTNode(
+                    genLiteral(numberType, tk.value)))
             ),
             ProductionRightRule(
                 rule=[true],
@@ -402,7 +404,8 @@ ExprProduction = [
             ),
             ProductionRightRule(
                 rule=[String],
-                reduce=(lambda tk:LeafASTNode(genLiteral(stringType, tk.value)))
+                reduce=(lambda tk:LeafASTNode(
+                    genLiteral(stringType, tk.value)))
             ),
             ProductionRightRule(
                 rule=[Identifier],
@@ -418,7 +421,7 @@ ExprProduction = [
         left=FUNCTIONCALL,
         right=[
             ProductionRightRule(
-                rule=[Identifier,LRound,CALLARGList,RRound],
+                rule=[Identifier, LRound, CALLARGList, RRound],
                 reduce=functionCall
             ),
             ProductionRightRule(
@@ -438,7 +441,7 @@ ExprProduction = [
         left=CALLARGList,
         right=[
             ProductionRightRule(
-                rule=[EXPR,Comma,CALLARGList],
+                rule=[EXPR, Comma, CALLARGList],
                 reduce=callArgList
             ),
             ProductionRightRule(
@@ -447,7 +450,7 @@ ExprProduction = [
             ),
             ProductionRightRule(
                 rule=[],
-                reduce=(lambda : FunctionCallArgListASTNode())
+                reduce=(lambda: FunctionCallArgListASTNode())
             )
         ]
     )
@@ -463,7 +466,8 @@ LogicalProduction = [
             ),
             ProductionRightRule(
                 rule=[LOGICALAND, Or, LOGICALEXPR],
-                reduce=(lambda cmp,Or,expr:BinOPASTNode(Or, genVariable(boolType), cmp, expr))
+                reduce=(lambda cmp, Or, expr:BinOPASTNode(
+                    Or, genVariable(boolType), cmp, expr))
             )
         ]
     ),
@@ -475,8 +479,9 @@ LogicalProduction = [
                 reduce=(lambda cmp:cmp),
             ),
             ProductionRightRule(
-                rule=[CMP,And,LOGICALAND],
-                reduce=(lambda cmp,expr:BinOPASTNode(And, genVariable(boolType), cmp, expr))
+                rule=[CMP, And, LOGICALAND],
+                reduce=(lambda cmp, expr:BinOPASTNode(
+                    And, genVariable(boolType), cmp, expr))
             )
         ],
     ),
@@ -485,16 +490,17 @@ LogicalProduction = [
         right=[
             ProductionRightRule(
                 rule=[EXPR, CMPToken, EXPR],
-                reduce=(lambda lexpr,type,rexpr:BinOPASTNode(type, genVariable(boolType), lexpr, rexpr)),
+                reduce=(lambda lexpr, type, rexpr:BinOPASTNode(
+                    type, genVariable(boolType), lexpr, rexpr)),
             ),
             ProductionRightRule(
                 rule=[LRound, LOGICALEXPR, RRound],
-                reduce=(lambda l,expr,r: expr)
+                reduce=(lambda l, expr, r: expr)
             )
         ],
     ),
     ProductionRule(
-        left = CMPToken,
+        left=CMPToken,
         right=[
             ProductionRightRule(
                 rule=[Equal],
@@ -529,8 +535,8 @@ for it in LexConfig:
     tks.append(it)
 
 config = ParserConfig(
-    tokens=[*tks,*KeyWord],
-    types= [
+    tokens=[*tks, *KeyWord],
+    types=[
         PROGRAM,
         STATEMENTList,
         STATEMENT,
@@ -555,6 +561,6 @@ config = ParserConfig(
         CMP,
         CMPToken
     ],
-    start= PROGRAM,
-    productions= [*StatementProduction, *ExprProduction, *LogicalProduction]
+    start=PROGRAM,
+    productions=[*StatementProduction, *ExprProduction, *LogicalProduction]
 )

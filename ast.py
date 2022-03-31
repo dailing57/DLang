@@ -24,7 +24,7 @@ class Context:
 
 varCnt = 0
 
-def clear():
+def clearAST():
     global varCnt
     varCnt = 0
 
