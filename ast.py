@@ -560,10 +560,10 @@ class FunctionASTNode(BasicASTNode):
         if self.returnType == voidType:
             if self.haveReturn:
                 raise(Error(f'function "{self.name}" should return void'))
-            else:
-                if not self.haveReturn:
-                    raise(
-                        Error(f'function "{self.name}" does not have Return statement'))
+        else:
+            if not self.haveReturn:
+                raise(
+                    Error(f'function "{self.name}" does not have Return statement'))
         sTable = SymbolTable()
         sTable.father = context.symbols
         context = Context(
@@ -599,9 +599,9 @@ class RootASTNode(BasicASTNode):
             self.main = other.main
 
     def visit(self, context: Context):
-        if self.main is not None:
+        if self.main is None:
             raise Error('main function is not defined')
-        context.globalFns[Main] = GlobalFunction(
+        context.globalFns[Main] = UserFunction(
             type=voidType,
             args=self.main.getArgsType(),
             address=1,
@@ -609,7 +609,7 @@ class RootASTNode(BasicASTNode):
             name=Main
         )
         for fn in self.fns:
-            context.globalFns[fn.name] = GlobalFunction(
+            context.globalFns[fn.name] = UserFunction(
                 type=fn.returnType,
                 args=fn.getArgsType(),
                 address=-1,

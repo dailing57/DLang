@@ -532,7 +532,7 @@ for it in LexConfig:
     tks.append(it)
 
 
-def beforeCreated():
+def beforeCreated(*args):
     clear()
     clearAST()
 
