@@ -24,20 +24,10 @@ class CompileOut:
 
 
 class CompileErrorOut:
-    def __init__(self, ok=False, msg=None) -> None:
+    def __init__(self, ok=False, tk=None, msg=None) -> None:
         self.ok = ok
+        self.tk = tk
         self.msg = msg
-
-
-def cleanAST():
-    clear()
-    clearAST()
-
-
-def genAST(root: RootASTNode, bindedFns: dict[str, BuiltinFunction]):
-    context = Context(symbols=SymbolTable(), globalFns=bindedFns, fnName=Main)
-    res = root.visit(context=context)
-    return CompileOut(code=res.code, globalFns=context.globalFns, root=root)
 
 
 class DLang:
@@ -60,14 +50,13 @@ class DLang:
     def compile(self, text):
         try:
             tokens = DLangLexer.parse(text)
-            ok, val = DLangParser.parse(tokens)
-            cp = genAST(val, bindedFns=self.bindedFns)
+            ok, val = DLangParser.parse(tokens, self.bindedFns)
             if ok:
-                cp.ok = True
-                cp.tokens = tokens
-                return cp
+                return CompileOut(ok=True, tokens=tokens, root=val[0], code=val[1], globalFns=val[2])
+            else:
+                return CompileErrorOut(ok=False, tk=val)
         except Error as e:
             return CompileErrorOut(ok=False, msg=e.message)
 
-    def run(cp: CompileOut):
-        vm(cp.code, cp.globalFns, [])
+    def run(self, cp: CompileOut, args: list[str] = [], input: list[str] = []):
+        self.hoo

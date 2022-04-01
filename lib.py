@@ -2,16 +2,20 @@ from cmath import isnan
 from math import ceil, floor, sqrt
 from random import randint
 from type import *
+
+
 class DArray:
-    def __init__(self,name,value,father = None) -> None:
+    def __init__(self, name, value, father=None) -> None:
         self.name = name
-        self.value:list = value
+        self.value: list = value
         self.father = father
 
-arrs:dict[str,DArray] = {}
 
-Input:list[str] = []
+arrs: dict[str, DArray] = {}
+
+Input: list[str] = []
 pos = 0
+
 
 def nextNumber():
     global pos
@@ -22,6 +26,7 @@ def nextNumber():
     else:
         raise(Error('Input Error, expects a Number'))
 
+
 def nextFloat():
     global pos
     val = float(Input[pos])
@@ -31,16 +36,18 @@ def nextFloat():
     else:
         raise(Error('Input Error, expects a Float'))
 
+
 def nextString():
     global pos
-    res =  Input[pos]
+    res = Input[pos]
     pos += 1
     return res
+
 
 def nextBool():
     global pos
     val = Input[pos]
-    pos+=1
+    pos += 1
     if val == true:
         return True
     if val == false:
@@ -48,34 +55,40 @@ def nextBool():
     else:
         raise(Error('Input Error, expects a Bool'))
 
+
 def arrayNew(name):
     fa = arrs[name] if name in arrs else None
-    arrs[name] = DArray(name,[],fa)
+    arrs[name] = DArray(name, [], fa)
 
-def arrayAssign(name,len):
+
+def arrayAssign(name, len):
     if name not in arrs:
         raise(Error(f'Array "{name}" is not defined'))
     arr = arrs[name]
     arr.value = [0 for i in range(len)]
+
 
 def arrayLen(name):
     if name not in arrs:
         raise(Error(f'Array "{name}" is not defined'))
     return len(arrs[name].value)
 
-def arrayPush(name,x):
+
+def arrayPush(name, x):
     if name not in arrs:
         raise(Error(f'Array "{name}" is not defined'))
     arr = arrs[name]
     arr.value.append(x)
     return len(arr.value)
 
+
 def arrayPop(name):
     if name not in arrs:
         raise(Error(f'Array "{name}" is not defined'))
     return arrs[name].value.pop()
 
-def arrayGet(name,i):
+
+def arrayGet(name, i):
     if name not in arrs:
         raise(Error(f'Array "{name}" is not defined'))
     arr = arrs[name]
@@ -83,7 +96,8 @@ def arrayGet(name,i):
         raise(Error('Array "{arr.name}" visit out of bound'))
     return arr.value[i]
 
-def arraySet(name,i,x):
+
+def arraySet(name, i, x):
     if name not in arrs:
         raise(Error(f'Array "{name}" is not defined'))
     arr = arrs[name]
@@ -91,10 +105,12 @@ def arraySet(name,i,x):
         raise(Error('Array "{arr.name}" visit out of bound'))
     arr.value[i] = x
 
+
 def arrayClear(name):
     if name not in arrs:
         raise(Error(f'Array "{name}" is not defined'))
     arrs[name].value = []
+
 
 def arrayDelete(name):
     if name not in arrs:
@@ -105,18 +121,19 @@ def arrayDelete(name):
     else:
         arrs.pop(name)
 
-def stringGet(s,i):
-    if i<0 or i>=len(s):
+
+def stringGet(s, i):
+    if i < 0 or i >= len(s):
         raise(Error('visit undefined memory'))
     return s[i]
 
 
-IOLib:list[BuiltinFunction] = [
+IOLib: list[BuiltinFunction] = [
     BuiltinFunction(
         name='In::hasNext',
         args=[],
         type=boolType,
-        fn=(lambda : pos<len(Input))
+        fn=(lambda: pos < len(Input))
     ),
     BuiltinFunction(
         name='In::nextNumber',
@@ -143,7 +160,7 @@ IOLib:list[BuiltinFunction] = [
         fn=nextBool
     ),
 ]
-ArrayLib:list[BuiltinFunction] = [
+ArrayLib: list[BuiltinFunction] = [
     BuiltinFunction(
         name='Array::new',
         args=[stringType],
@@ -152,7 +169,7 @@ ArrayLib:list[BuiltinFunction] = [
     ),
     BuiltinFunction(
         name='Array::assign',
-        args=[stringType,numberType],
+        args=[stringType, numberType],
         type=voidType,
         fn=arrayAssign
     ),
@@ -176,13 +193,13 @@ ArrayLib:list[BuiltinFunction] = [
     ),
     BuiltinFunction(
         name='Array::get',
-        args=[stringType,numberType],
+        args=[stringType, numberType],
         type=numberType,
         fn=arrayGet
     ),
     BuiltinFunction(
         name='Array::set',
-        args=[stringType,numberType,numberType],
+        args=[stringType, numberType, numberType],
         type=voidType,
         fn=arraySet
     ),
@@ -200,16 +217,16 @@ ArrayLib:list[BuiltinFunction] = [
     ),
 ]
 
-StringLib:list[BuiltinFunction] = [
+StringLib: list[BuiltinFunction] = [
     BuiltinFunction(
         name='String::length',
         args=[stringType],
         type=numberType,
-        fn=(lambda s : len(s))
+        fn=(lambda s: len(s))
     ),
     BuiltinFunction(
         name='String::get',
-        args=[stringType,numberType],
+        args=[stringType, numberType],
         type=stringType,
         fn=stringGet
     ),
@@ -227,40 +244,40 @@ StringLib:list[BuiltinFunction] = [
     ),
 ]
 
-NumberLib:list[BuiltinFunction] = [
+NumberLib: list[BuiltinFunction] = [
     BuiltinFunction(
         name='Number::to_string',
         args=[numberType],
         type=stringType,
         fn=(lambda s:str(s))
-    ), 
+    ),
     BuiltinFunction(
         name='Number::max',
-        args=[numberType,numberType],
+        args=[numberType, numberType],
         type=numberType,
-        fn=(lambda a,b:max(a,b))
+        fn=(lambda a, b:max(a, b))
     ),
     BuiltinFunction(
         name='Number::min',
-        args=[numberType,numberType],
+        args=[numberType, numberType],
         type=numberType,
-        fn=(lambda a,b:min(a,b))
+        fn=(lambda a, b:min(a, b))
     ),
     BuiltinFunction(
         name='Number::abs',
         args=[numberType],
         type=numberType,
-        fn=(lambda a,b:abs(a,b))
+        fn=(lambda a, b:abs(a, b))
     ),
     BuiltinFunction(
         name='rand',
-        args=[numberType,numberType],
+        args=[numberType, numberType],
         type=numberType,
-        fn=(lambda l,r:randint(l,r))
+        fn=(lambda l, r:randint(l, r))
     ),
 ]
 
-FloatLib:list[BuiltinFunction] = [
+FloatLib: list[BuiltinFunction] = [
     BuiltinFunction(
         name='Float::to_string',
         args=[floatType],
@@ -287,15 +304,15 @@ FloatLib:list[BuiltinFunction] = [
     ),
     BuiltinFunction(
         name='Float::max',
-        args=[floatType,floatType],
+        args=[floatType, floatType],
         type=floatType,
-        fn=(lambda a,b:max(a,b))
+        fn=(lambda a, b:max(a, b))
     ),
     BuiltinFunction(
         name='Float::min',
-        args=[floatType,floatType],
+        args=[floatType, floatType],
         type=floatType,
-        fn=(lambda a,b:min(a,b))
+        fn=(lambda a, b:min(a, b))
     ),
     BuiltinFunction(
         name='Float::abs',

@@ -1,4 +1,12 @@
-from index import DLang
+# from index import DLang
 
-inputCode = open('./test/helloWorld.dl','r')
-DLang.run(DLang.compile(inputCode))
+# inputCode = open('./test/helloWorld.dl', 'r')
+# dl = DLang()
+# print(dl.compile(inputCode).ok)
+
+def f(*args):
+    print(*args)
+    print(args)
+
+
+f(1, 2, 3)

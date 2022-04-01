@@ -357,10 +357,6 @@ ExprProduction = [
                 reduce=factornot
             ),
             ProductionRightRule(
-                rule=[Not, RightValue],
-                reduce=factornot
-            ),
-            ProductionRightRule(
                 rule=[RightValue],
                 reduce=rightVal
             ),
@@ -388,7 +384,7 @@ ExprProduction = [
             ProductionRightRule(
                 rule=[Number],
                 reduce=(lambda tk:LeafASTNode(
-                    genLiteral(numberType, tk.value)))
+                        genLiteral(numberType, tk.value)))
             ),
             ProductionRightRule(
                 rule=[true],
@@ -400,12 +396,13 @@ ExprProduction = [
             ),
             ProductionRightRule(
                 rule=[Float],
-                reduce=(lambda tk:LeafASTNode(genLiteral(floatType, tk.value)))
+                reduce=(lambda tk:LeafASTNode(
+                        genLiteral(floatType, tk.value)))
             ),
             ProductionRightRule(
                 rule=[String],
                 reduce=(lambda tk:LeafASTNode(
-                    genLiteral(stringType, tk.value)))
+                        genLiteral(stringType, tk.value)))
             ),
             ProductionRightRule(
                 rule=[Identifier],
@@ -461,13 +458,13 @@ LogicalProduction = [
         left=LOGICALEXPR,
         right=[
             ProductionRightRule(
-                rule=[LOGICALEXPR],
+                rule=[LOGICALAND],
                 reduce=(lambda expr:expr)
             ),
             ProductionRightRule(
                 rule=[LOGICALAND, Or, LOGICALEXPR],
                 reduce=(lambda cmp, Or, expr:BinOPASTNode(
-                    Or, genVariable(boolType), cmp, expr))
+                        Or, genVariable(boolType), cmp, expr))
             )
         ]
     ),
@@ -481,7 +478,7 @@ LogicalProduction = [
             ProductionRightRule(
                 rule=[CMP, And, LOGICALAND],
                 reduce=(lambda cmp, expr:BinOPASTNode(
-                    And, genVariable(boolType), cmp, expr))
+                        And, genVariable(boolType), cmp, expr))
             )
         ],
     ),
@@ -491,7 +488,7 @@ LogicalProduction = [
             ProductionRightRule(
                 rule=[EXPR, CMPToken, EXPR],
                 reduce=(lambda lexpr, type, rexpr:BinOPASTNode(
-                    type, genVariable(boolType), lexpr, rexpr)),
+                        type, genVariable(boolType), lexpr, rexpr)),
             ),
             ProductionRightRule(
                 rule=[LRound, LOGICALEXPR, RRound],
@@ -534,7 +531,23 @@ tks = []
 for it in LexConfig:
     tks.append(it)
 
+
+def beforeCreated():
+    clear()
+    clearAST()
+
+
+def created(root: RootASTNode, bindedFns: dict[str, BuiltinFunction]):
+    context = Context(symbols=SymbolTable(), globalFns=bindedFns, fnName=Main)
+    res = root.visit(context=context)
+    return root, res.code, context.globalFns
+
+
 config = ParserConfig(
+    hooks=ParserHooks(
+        beforeCreated=beforeCreated,
+        created=created
+    ),
     tokens=[*tks, *KeyWord],
     types=[
         PROGRAM,

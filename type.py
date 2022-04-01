@@ -2,13 +2,15 @@ from typing import Union
 from lex import *
 
 # VoidType
-voidType    = 'voidType'
+voidType = 'voidType'
 
-Main        = 'main'
+Main = 'main'
 FunctionDef = 'FunctionDef'
 globalAddress = 'globalAddress'
 VariableType = 'Variable'
-LiteralType  = 'Literal'
+LiteralType = 'Literal'
+
+
 class Variable:
     def __init__(self, id, name, isArg=False, isConst=True, isGlobal=False, type=None, value=None) -> None:
         self.id = id
@@ -42,8 +44,10 @@ class BuiltinFunction:
         self.fn = fn
         self.name = name
 
+
 class Error(Exception):
     def __init__(self, message=None):
         self.message = f'{self.__class__.__name__}: {message}'
 
-GlobalFunction = Union[UserFunction , BuiltinFunction]
+
+GlobalFunction = Union[UserFunction, BuiltinFunction]
