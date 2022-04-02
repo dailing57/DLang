@@ -56,6 +56,10 @@ def nextBool():
         raise(Error('Input Error, expects a Bool'))
 
 
+def output(text):
+    print(text)
+
+
 def arrayNew(name):
     fa = arrs[name] if name in arrs else None
     arrs[name] = DArray(name, [], fa)
@@ -158,6 +162,12 @@ IOLib: list[BuiltinFunction] = [
         args=[],
         type=boolType,
         fn=nextBool
+    ),
+    BuiltinFunction(
+        name='print',
+        args=[stringType],
+        type=voidType,
+        fn=output
     ),
 ]
 ArrayLib: list[BuiltinFunction] = [

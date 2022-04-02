@@ -184,7 +184,7 @@ class LeafASTNode(BasicASTNode):
                 raise(Error(f'variable {name} is not defined'))
         elif self.type == LiteralType:
             dst = self.dst
-            return NodeVisitorReturn([], dst=LiteralCode(value=dst.value, tyep=dst.type))
+            return NodeVisitorReturn([], dst=LiteralCode(value=dst.value, type=dst.type))
         else:
             raise(Error('unknown'))
 
@@ -232,12 +232,12 @@ class FunctionCallASTNode(BasicASTNode):
     def visit(self, context: Context) -> NodeVisitorReturn:
         fn = context.globalFns[self.name]
         if fn is not None:
-            if len(self.args) == len(fn.args):
+            if len(self.args.args) == len(fn.args):
                 code: list[ThreeAddressCode] = []
                 res = self.args.visit(context=context)
                 if self.args.checkType(fn.args):
                     code += res.code
-                    callCode: FunctionCallCode(
+                    callCode = FunctionCallCode(
                         type=ThreeAddressCodeType.FunctionCall,
                         name=self.name
                     )
@@ -572,7 +572,7 @@ class FunctionASTNode(BasicASTNode):
 
         code: list[ThreeAddressCode] = []
         for stat in self.statements:
-            code == stat.visit(context=context).code
+            code += stat.visit(context=context).code
             if stat.type == FunctionReturnType:
                 break
             elif stat.type == IfStatementType and stat.haveReturn():

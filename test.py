@@ -1,7 +1,6 @@
-# from index import DLang
+from index import DLang
 
-# inputCode = open('./test/helloWorld.dl', 'r')
-# dl = DLang()
-# tmp = dl.compile(inputCode)
-# print(tmp.ok, tmp.msg, tmp.tk)
-print(int(True))
+inputCode = open('./test/helloWorld.dl', 'r')
+dl = DLang()
+tmp = dl.compile(inputCode)
+dl.run(tmp)
