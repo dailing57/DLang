@@ -327,3 +327,23 @@ FloatLib: list[BuiltinFunction] = [
         fn=(lambda a:sqrt(a))
     ),
 ]
+
+
+def initInputHook(inp):
+    global arrs, Input, pos
+    arrs.clear()
+    Input = inp if inp is not None else []
+    pos = 0
+
+
+beforeRunHooks = [initInputHook]
+
+
+def clearHook(*arg):
+    global arrs, Input, pos
+    Input = []
+    arrs.clear()
+    pos = 0
+
+
+afterRunHooks = [clearHook]
