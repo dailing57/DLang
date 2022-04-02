@@ -54,17 +54,17 @@ class BinOPASTNode(BasicASTNode):
         self.y: ValueASTNode = y
 
     def visit(self, context: Context):
+        global varCnt
         code: list[ThreeAddressCode] = []
         xres = self.x.visit(context=context)
         yres = self.y.visit(context=context)
         if xres.dst is not None and yres.dst is not None:
             code += xres.code
             if hasattr(xres.dst, globalAddress) and xres.dst.globalAddress == 0:
-                global varCnt
-                varCnt += 1
                 tmpDst = LocalVariableCode(varCnt, type=xres.dst.type)
-                context.symbols.add(tmpDst.address, '$' +
-                                    str(tmpDst.address), tmpDst.type)
+                varCnt += 1
+                context.symbols.add(Variable(id=tmpDst.address, name='$' +
+                                    str(tmpDst.address), type=tmpDst.type))
                 assignCode = UnitOPCode(
                     type=Assign,
                     dst=tmpDst,
@@ -72,11 +72,12 @@ class BinOPASTNode(BasicASTNode):
                 )
                 code.append(assignCode)
                 xres.dst = tmpDst
-            varCnt += 1
             tmpVar = varCnt
+            varCnt += 1
             type = getBinOPType(self.type, xres.dst.type, yres.dst.type)
             if type is not None:
-                context.symbols.add(tmpVar, '$'+str(tmpVar), type)
+                context.symbols.add(
+                    Variable(id=tmpVar, name='$'+str(tmpVar), type=type))
 
                 if self.type == And or self.type == Or:
                     ifGoto = IfGotoCode(
@@ -116,6 +117,7 @@ class UnitOPASTNode(BasicASTNode):
         self.src: ValueASTNode = src
 
     def visit(self, context: Context) -> NodeVisitorReturn:
+        global varCnt
         code: list[ThreeAddressCode] = []
         res = self.src.visit(context=context)
         if res.dst is not None:
@@ -142,12 +144,12 @@ class UnitOPASTNode(BasicASTNode):
                 else:
                     raise(Error(f'variable {self.dst.name} is not defined'))
             else:
-                global varCnt
-                varCnt += 1
                 tmpVar = varCnt
+                varCnt += 1
                 type = getUnitOPType(self.type, res.dst.type)
                 if type is not None:
-                    context.symbols.add(tmpVar, '$'+str(tmpVar), type)
+                    context.symbols.add(
+                        Variable(id=tmpVar, name='$'+str(tmpVar), type=type))
                     code.append(UnitOPCode(
                         type=self.type,
                         dst=LocalVariableCode(address=tmpVar, type=type),
@@ -228,6 +230,7 @@ class FunctionCallASTNode(BasicASTNode):
         super().__init__(FunctionCallType)
         self.name: str = name
         self.args: FunctionCallArgListASTNode = args
+        self.dst = BasicASTNode(type=None)
 
     def visit(self, context: Context) -> NodeVisitorReturn:
         fn = context.globalFns[self.name]
@@ -304,7 +307,7 @@ class FunctionReturnASTNode(BasicASTNode):
                     name=context.fnName,
                     src=res.dst
                 )
-                code += returnCode
+                code.append(returnCode)
                 return NodeVisitorReturn(code)
             else:
                 raise(
@@ -327,15 +330,15 @@ class DefineASTNode(BasicASTNode):
         self.src: ValueASTNode = src
 
     def visit(self, context: Context) -> NodeVisitorReturn:
+        global varCnt
         code: list[ThreeAddressCode] = []
         if self.src is not None:
             res = self.src.visit(context)
             code += res.code
             if res.dst is not None:
                 if self.dst.type == None or self.dst.type == res.dst.type:
-                    global varCnt
-                    varCnt += 1
                     address = varCnt
+                    varCnt += 1
                     context.symbols.add(
                         Variable(address, self.dst.name, res.dst.type, isConst=self.dst.isConst))
                     assign = UnitOPCode(
@@ -355,9 +358,9 @@ class DefineASTNode(BasicASTNode):
             if self.dst.isConst:
                 raise(
                     Error(f'const variable {self.dst.name} is not initialized'))
-            varCnt += 1
             context.symbols.add(Variable(
                 id=varCnt, name=self.dst.name, type=self.dst.type, isConst=self.dst.isConst))
+            varCnt += 1
             return NodeVisitorReturn([])
 
 
@@ -527,7 +530,7 @@ class IfStatementASTNode(BasicASTNode):
                     offset=len(code)
                 )
                 code.append(trueGoto)
-                ifFalseGoto.offset = len(code) - trueGoto.offset - 1
+                ifFalseGoto.offset = len(code) - ifFalseGoto.offset - 1
                 elseRes = self.elseBody.visit(context=context)
                 code += elseRes.code
                 trueGoto.offset = len(code) - trueGoto.offset - 1
@@ -554,7 +557,7 @@ class FunctionASTNode(BasicASTNode):
         self.haveReturn = statements.haveReturn
 
     def getArgsType(self):
-        return self.args.defs
+        return list(map(lambda df: df.type, self.args.defs))
 
     def visit(self, context: Context) -> NodeVisitorReturn:
         if self.returnType == voidType:
@@ -599,6 +602,7 @@ class RootASTNode(BasicASTNode):
             self.main = other.main
 
     def visit(self, context: Context):
+        global varCnt
         if self.main is None:
             raise Error('main function is not defined')
         context.globalFns[Main] = UserFunction(
@@ -622,7 +626,7 @@ class RootASTNode(BasicASTNode):
         )
         code: list[ThreeAddressCode] = [start]
         code += self.main.visit(context).code
-        global varCnt
+
         context.globalFns[Main].memCount = varCnt
         for fn in self.fns:
             context.fnName = fn.name

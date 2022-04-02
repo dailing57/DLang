@@ -250,19 +250,19 @@ StatementProduction = [
         right=[
             ProductionRightRule(
                 rule=[numberType],
-                reduce=returnType
+                reduce=(lambda tk:tk.type)
             ),
             ProductionRightRule(
                 rule=[floatType],
-                reduce=returnType
+                reduce=(lambda tk:tk.type)
             ),
             ProductionRightRule(
                 rule=[stringType],
-                reduce=returnType
+                reduce=(lambda tk:tk.type)
             ),
             ProductionRightRule(
                 rule=[boolType],
-                reduce=returnType
+                reduce=(lambda tk:tk.type)
             ),
         ]
     ),

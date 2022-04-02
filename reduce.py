@@ -192,7 +192,7 @@ def functionExpr(ret, expr: ValueASTNode):
     return rNode
 
 
-def returnType(type):
+def returnType(arr, type):
     return type
 
 

@@ -47,13 +47,13 @@ def vm(code: list[ThreeAddressCode], globalFns: dict[str, GlobalFunction], args:
         if hasattr(pos, 'address'):
             address = sp + pos.address
             if address < 0 or address >= len(varStk):
-                raise('visit out of stack range')
+                raise(Error('visit out of stack range'))
             varStk[address] = val
         else:
             address = pos.globalAddress
             if address < 0 or address >= len(globalVar):
                 raise(Error('visit out of global memory range'))
-            varStk[address] = val
+            globalVar[address] = val
 
     def TAC_nop(code):
         pass
@@ -93,14 +93,16 @@ def vm(code: list[ThreeAddressCode], globalFns: dict[str, GlobalFunction], args:
         sp = record.sp
 
     def TAC_pushStack(code: ThreeAddressCode):
+        nonlocal fnName, sp, pc, varStk, callStk, globalVar
         value = getValue(code.src)
         varStk.append(value)
 
     def TAC_goto(code: ThreeAddressCode):
-        nonlocal fnName, sp, pc
+        nonlocal pc
         pc += code.offset
 
     def TAC_ifGoto(code: ThreeAddressCode):
+        nonlocal pc
         value = getValue(code.src)
         fg = value
         if type(value) == int:
