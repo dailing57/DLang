@@ -181,7 +181,7 @@ class LeafASTNode(BasicASTNode):
                         address=mem.id, type=mem.type)
                     return NodeVisitorReturn([], dst=dst)
                 else:
-                    raise(Error(f'variable {name} is not in initialized'))
+                    raise(Error(f'variable {name} is not initialized'))
             else:
                 raise(Error(f'variable {name} is not defined'))
         elif self.type == LiteralType:
@@ -340,13 +340,14 @@ class DefineASTNode(BasicASTNode):
                     address = varCnt
                     varCnt += 1
                     context.symbols.add(
-                        Variable(address, self.dst.name, res.dst.type, isConst=self.dst.isConst))
+                        Variable(id=address, name=self.dst.name, type=res.dst.type, isConst=self.dst.isConst))
                     assign = UnitOPCode(
                         type=Assign,
                         dst=LocalVariableCode(
                             address=address,
                             type=res.dst.type
-                        )
+                        ),
+                        src=res.dst
                     )
                     code.append(assign)
                     return NodeVisitorReturn(code)
@@ -451,6 +452,7 @@ class WhileStatementASTNode(BasicASTNode):
             code += bodyRes.code
             code.append(
                 GotoCode(type=ThreeAddressCodeType.Goto, offset=-len(code)-1))
+            ifFalseGoto.offset = len(code) - ifFalseGoto.offset - 1
         else:
             raise(Error('void error'))
         return NodeVisitorReturn(code)

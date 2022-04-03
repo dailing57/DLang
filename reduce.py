@@ -171,7 +171,7 @@ def ForAssignList(value, ag, expr: ValueASTNode, other: list[UnitOPASTNode]):
 
 def ForIdAssign(value, ag, expr: ValueASTNode):
     value = value.value
-    return UnitOPASTNode(Assign, genVariable(None, value), expr)
+    return [UnitOPASTNode(Assign, genVariable(None, value), expr)]
 
 
 def openStatementS(f, l, expr: ValueASTNode, r, body: StatementASTNode):
@@ -182,7 +182,7 @@ def openStatementIfEl(f, l, expr: ValueASTNode, r, body: StatementASTNode, el, e
     return IfStatementASTNode(expr, body=body, elseBody=elseBody)
 
 
-def functionReturnEmpty():
+def functionReturnEmpty(r):
     return FunctionReturnASTNode()
 
 
@@ -249,17 +249,17 @@ def ExprTerm(node):
 
 def termMul(factor: ValueASTNode, mul, term: ValueASTNode):
     type = getBinOPType(Mul, factor.dst.type, term.dst.type)
-    return BinOPASTNode(Mul, genVariable(type), type, term)
+    return BinOPASTNode(Mul, genVariable(type), factor, term)
 
 
 def termDiv(factor: ValueASTNode, div, term: ValueASTNode):
     type = getBinOPType(Div, factor.dst.type, term.dst.type)
-    return BinOPASTNode(Div, genVariable(type), type, term)
+    return BinOPASTNode(Div, genVariable(type), factor, term)
 
 
 def termMod(factor: ValueASTNode, mod, term: ValueASTNode):
     type = getBinOPType(Mod, factor.dst.type, term.dst.type)
-    return BinOPASTNode(Mod, genVariable(type), type, term)
+    return BinOPASTNode(Mod, genVariable(type), factor, term)
 
 
 def factorPlus(p, node):

@@ -463,7 +463,7 @@ LogicalProduction = [
             ),
             ProductionRightRule(
                 rule=[LOGICALAND, Or, LOGICALEXPR],
-                reduce=(lambda cmp, Or, expr:BinOPASTNode(
+                reduce=(lambda cmp, o, expr:BinOPASTNode(
                         Or, genVariable(boolType), cmp, expr))
             )
         ]
@@ -477,7 +477,7 @@ LogicalProduction = [
             ),
             ProductionRightRule(
                 rule=[CMP, And, LOGICALAND],
-                reduce=(lambda cmp, expr:BinOPASTNode(
+                reduce=(lambda cmp, ad, expr:BinOPASTNode(
                         And, genVariable(boolType), cmp, expr))
             )
         ],

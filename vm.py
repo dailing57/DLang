@@ -179,7 +179,12 @@ def vm(code: list[ThreeAddressCode], globalFns: dict[str, GlobalFunction], args:
     def TAC_plus(code: ThreeAddressCode):
         x = getValue(code.x)
         y = getValue(code.y)
-        setValue(code.dst, x + y)
+        val = -1
+        if code.dst.type == stringType:
+            val = str(x) + str(y)
+        else:
+            val = x+y
+        setValue(code.dst, val)
 
     def TAC_minus(code: ThreeAddressCode):
         x = getValue(code.x)
