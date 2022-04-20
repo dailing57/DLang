@@ -296,7 +296,8 @@ def functionCall(value, l, args: FunctionCallArgListASTNode, r):
 
 
 def functionCallNamespace(namespace, dc, value, l, args: FunctionCallArgListASTNode, r):
-    fnCall = FunctionCallASTNode(namespace.value+'::'+value.value, args=args)
+    fnCall = FunctionCallASTNode(
+        namespace.value+DoubleColon+value.value, args=args)
     return fnCall
 
 

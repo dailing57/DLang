@@ -134,37 +134,37 @@ def stringGet(s, i):
 
 IOLib: list[BuiltinFunction] = [
     BuiltinFunction(
-        name='In::hasNext',
+        name=Lib_In + DoubleColon + Lib_hasNext,
         args=[],
         type=boolType,
         fn=(lambda: pos < len(Input))
     ),
     BuiltinFunction(
-        name='In::nextNumber',
+        name=Lib_In + DoubleColon + Lib_nextNumber,
         args=[],
         type=numberType,
         fn=nextNumber
     ),
     BuiltinFunction(
-        name='In::nextFloat',
+        name=Lib_In + DoubleColon + Lib_nextFloat,
         args=[],
         type=floatType,
         fn=nextFloat
     ),
     BuiltinFunction(
-        name='In::nextString',
+        name=Lib_In + DoubleColon + Lib_nextString,
         args=[],
         type=stringType,
         fn=nextString
     ),
     BuiltinFunction(
-        name='In::nextBool',
+        name=Lib_In + DoubleColon + Lib_nextBool,
         args=[],
         type=boolType,
         fn=nextBool
     ),
     BuiltinFunction(
-        name='print',
+        name=Lib_Out,
         args=[stringType],
         type=voidType,
         fn=output
@@ -172,55 +172,55 @@ IOLib: list[BuiltinFunction] = [
 ]
 ArrayLib: list[BuiltinFunction] = [
     BuiltinFunction(
-        name='Array::new',
+        name=Lib_Array + DoubleColon + Lib_new,
         args=[stringType],
         type=voidType,
         fn=arrayNew
     ),
     BuiltinFunction(
-        name='Array::assign',
+        name=Lib_Array + DoubleColon + Lib_assign,
         args=[stringType, numberType],
         type=voidType,
         fn=arrayAssign
     ),
     BuiltinFunction(
-        name='Array::length',
+        name=Lib_Array + DoubleColon + Lib_length,
         args=[stringType],
         type=numberType,
         fn=arrayLen
     ),
     BuiltinFunction(
-        name='Array::push',
+        name=Lib_Array + DoubleColon + Lib_push,
         args=[stringType],
         type=numberType,
         fn=arrayPush
     ),
     BuiltinFunction(
-        name='Array::pop',
+        name=Lib_Array + DoubleColon + Lib_pop,
         args=[stringType],
         type=numberType,
         fn=arrayPop
     ),
     BuiltinFunction(
-        name='Array::get',
+        name=Lib_Array + DoubleColon + Lib_get,
         args=[stringType, numberType],
         type=numberType,
         fn=arrayGet
     ),
     BuiltinFunction(
-        name='Array::set',
+        name=Lib_Array + DoubleColon + Lib_set,
         args=[stringType, numberType, numberType],
         type=voidType,
         fn=arraySet
     ),
     BuiltinFunction(
-        name='Array::clear',
+        name=Lib_Array + DoubleColon + Lib_clear,
         args=[stringType],
         type=voidType,
         fn=arrayClear
     ),
     BuiltinFunction(
-        name='Array::Delete',
+        name=Lib_Array + DoubleColon + Lib_Delete,
         args=[stringType],
         type=voidType,
         fn=arrayDelete
@@ -229,25 +229,25 @@ ArrayLib: list[BuiltinFunction] = [
 
 StringLib: list[BuiltinFunction] = [
     BuiltinFunction(
-        name='String::length',
+        name=Lib_String + DoubleColon + Lib_length,
         args=[stringType],
         type=numberType,
         fn=(lambda s: len(s))
     ),
     BuiltinFunction(
-        name='String::get',
+        name=Lib_String + DoubleColon + Lib_get,
         args=[stringType, numberType],
         type=stringType,
         fn=stringGet
     ),
     BuiltinFunction(
-        name='String::to_number',
+        name=Lib_String + DoubleColon + Lib_to_number,
         args=[stringType],
         type=numberType,
         fn=(lambda s:int(s))
     ),
     BuiltinFunction(
-        name='String::to_float',
+        name=Lib_String + DoubleColon + Lib_to_float,
         args=[stringType],
         type=floatType,
         fn=(lambda s:float(s))
@@ -256,31 +256,31 @@ StringLib: list[BuiltinFunction] = [
 
 NumberLib: list[BuiltinFunction] = [
     BuiltinFunction(
-        name='Number::to_string',
+        name=Lib_Number + DoubleColon + Lib_to_string,
         args=[numberType],
         type=stringType,
         fn=(lambda s:str(s))
     ),
     BuiltinFunction(
-        name='Number::max',
+        name=Lib_Number + DoubleColon + Lib_max,
         args=[numberType, numberType],
         type=numberType,
         fn=(lambda a, b:max(a, b))
     ),
     BuiltinFunction(
-        name='Number::min',
+        name=Lib_Number + DoubleColon + Lib_min,
         args=[numberType, numberType],
         type=numberType,
         fn=(lambda a, b:min(a, b))
     ),
     BuiltinFunction(
-        name='Number::abs',
+        name=Lib_Number + DoubleColon + Lib_abs,
         args=[numberType],
         type=numberType,
         fn=(lambda a, b:abs(a, b))
     ),
     BuiltinFunction(
-        name='rand',
+        name=Lib_Number + DoubleColon + Lib_rand,
         args=[numberType, numberType],
         type=numberType,
         fn=(lambda l, r:randint(l, r))
@@ -289,49 +289,49 @@ NumberLib: list[BuiltinFunction] = [
 
 FloatLib: list[BuiltinFunction] = [
     BuiltinFunction(
-        name='Float::to_string',
+        name=Lib_Float + DoubleColon + Lib_to_string,
         args=[floatType],
         type=stringType,
         fn=(lambda a:str(a))
     ),
     BuiltinFunction(
-        name='Float::floor',
+        name=Lib_Float + DoubleColon + Lib_floor,
         args=[floatType],
         type=numberType,
         fn=(lambda a:floor(a))
     ),
     BuiltinFunction(
-        name='Float::round',
+        name=Lib_Float + DoubleColon + Lib_round,
         args=[floatType],
         type=numberType,
         fn=(lambda a:round(a))
     ),
     BuiltinFunction(
-        name='Float::ceil',
+        name=Lib_Float + DoubleColon + Lib_ceil,
         args=[floatType],
         type=numberType,
         fn=(lambda a:ceil(a))
     ),
     BuiltinFunction(
-        name='Float::max',
+        name=Lib_Float + DoubleColon + Lib_max,
         args=[floatType, floatType],
         type=floatType,
         fn=(lambda a, b:max(a, b))
     ),
     BuiltinFunction(
-        name='Float::min',
+        name=Lib_Float + DoubleColon + Lib_min,
         args=[floatType, floatType],
         type=floatType,
         fn=(lambda a, b:min(a, b))
     ),
     BuiltinFunction(
-        name='Float::abs',
+        name=Lib_Float + DoubleColon + Lib_abs,
         args=[floatType],
         type=floatType,
         fn=(lambda a:abs(a))
     ),
     BuiltinFunction(
-        name='Float::sqrt',
+        name=Lib_Float + DoubleColon + Lib_sqrt,
         args=[floatType],
         type=floatType,
         fn=(lambda a:sqrt(a))

@@ -1,10 +1,6 @@
 from typing import Union
-from lex import *
+from lex_zh import *
 
-# VoidType
-voidType = 'voidType'
-
-Main = 'main'
 FunctionDef = 'FunctionDef'
 globalAddress = 'globalAddress'
 VariableType = 'Variable'

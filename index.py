@@ -1,6 +1,5 @@
 from DLex.ReParser import *
 from DParse.LRParser import *
-from lex import LexConfig
 from syntax import config as SyntaxConfig
 from tac import *
 from type import *
