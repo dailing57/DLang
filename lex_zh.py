@@ -90,7 +90,7 @@ LexConfig = {
         valCal=lambda x: float(x)
     ),
     String: IToken(
-        rule='"([ !#-\\[\\[-~]|\\\\\\\\|\\\\"一-龥)*"',
+        rule='"([一-龥 !#-\\[\\[-~]|\\\\\\\\|\\\\")*"',
         valCal=lambda x: x[1:-1]
     ),
     Plus: IToken(rule='\\+'),
