@@ -9,9 +9,13 @@ def main():
     parser.add_argument('codefile', help='dlang code file')
     parser.add_argument('-a', '--nargs', nargs='+')
     parser.add_argument('-i', '--input')
+    parser.add_argument('-m', '--mode')
     args = parser.parse_args()
     codefile = open(args.codefile, 'r', encoding='utf-8')
-    dl = DLang()
+    mode = 'zh'
+    if args.mode is not None:
+        mode = args.mode
+    dl = DLang(mode)
     tmp = dl.compile(codefile)
     if(tmp.ok):
         ags = []
@@ -23,8 +27,8 @@ def main():
             inp = inputfile.read().split()
         dl.run(tmp, ags, inp)
     else:
-        if(hasattr(tmp, 'tk')):
-            print('Compile error happened, please check the syntax around ' + tmp.tk)
+        if(tmp.tk is not None):
+            print('Compile error happened, please check the syntax around ' + str(tmp.tk))
         else:
             print('Compile error: ' + tmp.msg)
 

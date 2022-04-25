@@ -1,4 +1,4 @@
-from lex import *
+from lex_en import *
 from type import *
 from ast import *
 from symbolTable import *
@@ -253,6 +253,10 @@ StatementProduction = [
                 reduce=(lambda tk:tk.type)
             ),
             ProductionRightRule(
+                rule=[complexType],
+                reduce=(lambda tk:tk.type)
+            ),
+            ProductionRightRule(
                 rule=[floatType],
                 reduce=(lambda tk:tk.type)
             ),
@@ -262,6 +266,10 @@ StatementProduction = [
             ),
             ProductionRightRule(
                 rule=[boolType],
+                reduce=(lambda tk:tk.type)
+            ),
+            ProductionRightRule(
+                rule=[functionType],
                 reduce=(lambda tk:tk.type)
             ),
         ]
@@ -284,6 +292,20 @@ StatementProduction = [
             ProductionRightRule(
                 rule=[Identifier, Colon, TYPES, Assign, EXPR],
                 reduce=defineAssignT
+            ),
+            ProductionRightRule(
+                rule=[Identifier,
+                      Colon,
+                      TYPES,
+                      Assign,
+                      LRound,
+                      ARGDEFINEList,
+                      RRound,
+                      RETURNTYPE,
+                      LBrace,
+                      STATEMENTList,
+                      RBrace],
+                reduce=defineLocalFunction
             ),
         ]
     ),
@@ -385,6 +407,11 @@ ExprProduction = [
                 rule=[Number],
                 reduce=(lambda tk:LeafASTNode(
                         genLiteral(numberType, tk.value)))
+            ),
+            ProductionRightRule(
+                rule=[ComplexD],
+                reduce=(lambda tk:LeafASTNode(
+                        genLiteral(complexType, tk.value)))
             ),
             ProductionRightRule(
                 rule=[true],

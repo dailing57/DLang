@@ -1,4 +1,4 @@
-fn main(a: number) {
+fun main(a: number) {
   if (a < 0) {
     print("emmmm");
     return ;

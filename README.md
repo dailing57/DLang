@@ -1,7 +1,7 @@
 # DLang
 DL's Language 
 
-something about AST:
+AST类图:
 
 ```mermaid
 classDiagram
@@ -162,4 +162,22 @@ classDiagram
 	FunctionReturnASTNode --> FunctionReturnCode
 
 ```
+
+如何实现将函数作为变量？
+
+1. 在函数（甲）内部定义函数（乙）
+
+2. 返回定义的函数（乙）
+
+3. 声明变量丙等于调用甲的返回值
+
+4. 需要把丙注册到函数池
+
+   如何实现这个在函数内部的注册功能？
+
+   如果这个函数存在外部引用，意味着需要将这些外部引用转化为全局变量
+
+
+
+
 

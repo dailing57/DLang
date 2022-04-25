@@ -7,9 +7,7 @@ from vm import vm
 from AST import *
 from lib import *
 from tac import *
-
-DLangLexer = LexParser(LexConfig, True, KeyWord)
-DLangParser = LRParser(SyntaxConfig)
+from dill import dump, load
 
 
 class CompileOut:
@@ -35,8 +33,10 @@ class IHooks:
 
 
 class DLang:
-    def __init__(self) -> None:
+    def __init__(self, mode) -> None:
         self.bindedFns: dict[str, BuiltinFunction] = {}
+        self.DLangLexer = None
+        self.DLangParser = None
         for it in IOLib:
             self.bindedFns[it.name] = it
         for it in ArrayLib:
@@ -49,14 +49,37 @@ class DLang:
             self.bindedFns[it.name] = it
         self.hooks = IHooks(beforeRunHooks=beforeRunHooks,
                             afterRunHooks=afterRunHooks)
+        if mode == 'zh':
+            try:
+                with open('./seri/DLangLexer-zh', 'rb') as pkf:
+                    self.DLangLexer = load(pkf)
+                with open('./seri/DLangParser-zh', 'rb') as pkf:
+                    self.DLangParser = load(pkf)
+            except Exception as e:
+                self.DLangLexer = LexParser(LexConfig, True, KeyWord)
+                self.DLangParser = LRParser(SyntaxConfig)
+                with open('./seri/DLangLexer-zh', 'wb') as f:
+                    dump(self.DLangLexer, f)
+                with open('./seri/DLangParser-zh', 'wb') as f:
+                    dump(self.DLangParser, f)
+        elif mode == 'en':
+            try:
+                with open('./seri/DLangLexer-en', 'rb') as pkf:
+                    self.DLangLexer = load(pkf)
+                with open('./seri/DLangParser-en', 'rb') as pkf:
+                    self.DLangParser = load(pkf)
+            except Exception as e:
+                print('Please change the type file for en.')
+        else:
+            print('No such mode.')
 
     def addFn(self, name, type, args, fn):
         self.bindedFns[name] = BuiltinFunction(type=type, args=args, fn=fn)
 
     def compile(self, text):
         try:
-            tokens = DLangLexer.parse(text)
-            ok, val = DLangParser.parse(tokens, self.bindedFns)
+            tokens = self.DLangLexer.parse(text)
+            ok, val = self.DLangParser.parse(tokens, self.bindedFns)
             if ok:
                 return CompileOut(ok=True, tokens=tokens, root=val[0], code=val[1], globalFns=val[2])
             else:

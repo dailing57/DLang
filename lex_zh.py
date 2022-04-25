@@ -13,6 +13,8 @@ numberType = '整'
 floatType = '浮'
 stringType = '串'
 boolType = '判'
+complexType = '复'
+functionType = '函型'
 true = '真'
 false = '假'
 # VoidType
@@ -58,7 +60,7 @@ Identifier = 'Identifier'
 Number = '整型'
 Float = '浮型'
 String = '串型'
-
+ComplexD = '复型'
 KeyWord = {
     Fn,
     Return,
@@ -73,6 +75,8 @@ KeyWord = {
     floatType,
     stringType,
     boolType,
+    complexType,
+    functionType,
     true,
     false
 }
@@ -86,8 +90,12 @@ LexConfig = {
         valCal=lambda x: int(x)
     ),
     Float: IToken(
-        rule='([0-9]+.[0-9]+|.[0-9]+)',
+        rule='([0-9]+.[0-9]+|.[0-9]+|[0-9].[0-9]+[eE][0-9]+)',
         valCal=lambda x: float(x)
+    ),
+    ComplexD: IToken(
+        rule='[0-9]\\+[0-9]+i',
+        valCal=lambda x: complex(x[:-1]+'j')
     ),
     String: IToken(
         rule='"([一-龥 !#-\\[\\[-~]|\\\\\\\\|\\\\")*"',
@@ -144,13 +152,14 @@ Lib_Delete = '删'
 Lib_String = '串型'
 Lib_to_number = '变整'
 Lib_to_float = '变浮'
-Lib_Number = '整型'
+Lib_Number = Number
+Lib_Complex = ComplexD
 Lib_to_string = '变串'
 Lib_max = '最大'
 Lib_min = '最小'
 Lib_abs = '绝对'
 Lib_rand = '随机'
-Lib_Float = '浮型'
+Lib_Float = Float
 Lib_floor = '下整'
 Lib_round = '四舍'
 Lib_ceil = '上整'

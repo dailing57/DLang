@@ -21,6 +21,7 @@ class ThreeAddressCodeType:
     NOP = 'NOP'
     FunctionCall = 'FunctionCall'
     FunctionReturn = 'FunctionReturn'
+    FunctionCreate = 'FunctionCreate'
     Goto = 'Goto'
     IfGoto = 'IfGoto'
     Plus = 'Plus'
@@ -108,6 +109,12 @@ class PushStackCode:
         self.src = src
 
 
+class CreateFunction:
+    def __init__(self, funAddress, catchList) -> None:
+        self.funAddress = funAddress
+        self.catchList = catchList
+
+
 ThreeAddressCode = Union[
     NOPCode,
     FunctionCallCode,
@@ -116,7 +123,8 @@ ThreeAddressCode = Union[
     IfGotoCode,
     BinOPCode,
     UnitOPCode,
-    PushStackCode
+    PushStackCode,
+    CreateFunction
 ]
 
 
@@ -128,6 +136,8 @@ def getBinOPType(op, a=None, b=None):
     if op == ThreeAddressCodeType.Plus:
         if a == stringType or b == stringType:
             return stringType
+        elif a == complexType or b == complexType:
+            return complexType
         elif a == floatType or b == floatType:
             return floatType
         else:
@@ -135,6 +145,8 @@ def getBinOPType(op, a=None, b=None):
     elif op == ThreeAddressCodeType.Minus:
         if a == stringType or b == stringType:
             return None
+        elif a == complexType or b == complexType:
+            return complexType
         elif a == floatType or b == floatType:
             return floatType
         else:
@@ -142,6 +154,8 @@ def getBinOPType(op, a=None, b=None):
     elif op == ThreeAddressCodeType.Mul:
         if a == stringType or b == stringType:
             return None
+        elif a == complexType or b == complexType:
+            return complexType
         elif a == floatType or b == floatType:
             return floatType
         else:
@@ -149,6 +163,8 @@ def getBinOPType(op, a=None, b=None):
     elif op == ThreeAddressCodeType.Div:
         if a == stringType or b == stringType:
             return None
+        elif a == complexType or b == complexType:
+            return complexType
         elif a == floatType or b == floatType:
             return floatType
         else:

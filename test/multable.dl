@@ -1,4 +1,4 @@
-fn getDigit(a: number) -> number {
+fun getDigit(a: number) -> number {
   if (a == 0) {
     return 1;
   } else if (a < 0) {
@@ -12,7 +12,7 @@ fn getDigit(a: number) -> number {
   return c;
 }
 
-fn main() {
+fun main() {
   let a = 9;
   const aDigit = getDigit(a);
   const mxDigit = getDigit(a * a);

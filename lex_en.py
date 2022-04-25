@@ -1,6 +1,6 @@
 from DLex.ReParser import IToken
 # keyWord
-Fn = 'fn'
+Fn = 'fun'
 Return = 'return'
 Main = 'main'
 Let = 'let'
@@ -13,9 +13,12 @@ numberType = 'number'
 floatType = 'float'
 stringType = 'string'
 boolType = 'bool'
+complexType = 'complex'
+functionType = 'function'
 true = 'True'
 false = 'False'
-
+# VoidType
+voidType = 'void'
 # CmpOPType
 NotEqual = 'NotEqual'
 Equal = 'Equal'
@@ -57,7 +60,7 @@ Identifier = 'Identifier'
 Number = 'Number'
 Float = 'Float'
 String = 'String'
-
+ComplexD = 'Complex'
 KeyWord = {
     Fn,
     Return,
@@ -72,6 +75,8 @@ KeyWord = {
     floatType,
     stringType,
     boolType,
+    complexType,
+    functionType,
     true,
     false
 }
@@ -85,8 +90,12 @@ LexConfig = {
         valCal=lambda x: int(x)
     ),
     Float: IToken(
-        rule='([0-9]+.[0-9]+|.[0-9]+)',
+        rule='([0-9]+.[0-9]+|.[0-9]+|[0-9].[0-9]+[eE][0-9]+)',
         valCal=lambda x: float(x)
+    ),
+    ComplexD: IToken(
+        rule='[0-9]\\+[0-9]+i',
+        valCal=lambda x: complex(x[:-1]+'j')
     ),
     String: IToken(
         rule='"([ !#-\\[\\[-~]|\\\\\\\\|\\\\")*"',
@@ -122,3 +131,36 @@ LexConfig = {
         valCal=lambda x: x[2:]
     ),
 }
+
+Lib_In = 'In'
+Lib_hasNext = 'hasNext'
+Lib_nextNumber = 'nextNumber'
+Lib_nextFloat = 'nextFloat'
+Lib_nextString = 'nextString'
+Lib_nextBool = 'nextBool'
+Lib_Out = 'print'
+Lib_Array = 'Array'
+Lib_new = 'new'
+Lib_assign = 'assign'
+Lib_length = 'length'
+Lib_push = 'push'
+Lib_pop = 'pop'
+Lib_get = 'get'
+Lib_set = 'set'
+Lib_clear = 'clear'
+Lib_Delete = 'Delete'
+Lib_String = 'String'
+Lib_to_number = 'to_number'
+Lib_to_float = 'to_float'
+Lib_Number = Number
+Lib_Complex = ComplexD
+Lib_to_string = 'to_string'
+Lib_max = 'max'
+Lib_min = 'min'
+Lib_abs = 'abs'
+Lib_rand = 'rand'
+Lib_Float = Float
+Lib_floor = 'floor'
+Lib_round = 'round'
+Lib_ceil = 'ceil'
+Lib_sqrt = 'sqrt'

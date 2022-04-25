@@ -206,14 +206,21 @@ def defineIdType(value, colon, type):
     return DefineASTNode(genVariable(type, value))
 
 
-def defineAssign(value, colon, expr: ValueASTNode):
+def defineAssign(value, Assign, expr: ValueASTNode):
     value = value.value
     return DefineASTNode(genVariable(expr.dst.type, value), expr)
 
 
-def defineAssignT(value, colon, type, expr):
+def defineAssignT(value, colon, type, Assign, expr):
     value = value.value
     return DefineASTNode(genVariable(type, value), expr)
+
+
+def defineLocalFunction(value, col, ftype, assign, L, argList: ArgDefineListASTNode, R, type, LB, body: StatementListASTNode, RB):
+    value = value.value
+    body.createContext = True
+    fnNode = FunctionASTNode(value, argList, type, body)
+    return DefineASTNode(genVariable(ftype, value), fnNode)
 
 
 def defineList(d: DefineASTNode, comma, other: DefineListASTNode):

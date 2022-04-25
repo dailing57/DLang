@@ -165,7 +165,6 @@ class UnitOPASTNode(BasicASTNode):
 class LeafASTNode(BasicASTNode):
     def __init__(self, item) -> None:
         if hasattr(item, 'id'):
-            VariableType
             super().__init__(VariableType)
         else:
             super().__init__(LiteralType)
@@ -260,10 +259,6 @@ class FunctionCallASTNode(BasicASTNode):
             raise(Error(f'function "{self.name}" is not defined'))
 
 
-ValueASTNode = Union[BinOPASTNode, UnitOPASTNode,
-                     LeafASTNode, FunctionCallASTNode]
-
-
 class ArgDefineListASTNode(BasicASTNode):
     def __init__(self) -> None:
         super().__init__(ArgDefineListType)
@@ -301,7 +296,7 @@ class FunctionReturnASTNode(BasicASTNode):
                 code += res.code
                 if fnObj.type != res.dst.type:
                     raise(Error(
-                        f'function "${context.fnName}" should return <void>, but return <{res.dst.type}>'))
+                        f'function "{context.fnName}" should return <void>, but return <{res.dst.type}>'))
                 returnCode = FunctionReturnCode(
                     type=ThreeAddressCodeType.FunctionReturn,
                     name=context.fnName,
@@ -543,10 +538,6 @@ class IfStatementASTNode(BasicASTNode):
         return NodeVisitorReturn(code)
 
 
-StatementASTNode = Union[StatementListASTNode, ValueASTNode, DefineListASTNode,
-                         FunctionReturnASTNode, IfStatementASTNode, WhileStatementASTNode, ForStatementASTNode]
-
-
 class FunctionASTNode(BasicASTNode):
     def __init__(self, name, args, returnType, statements: StatementListASTNode) -> None:
         super().__init__(FunctionDef)
@@ -589,6 +580,12 @@ class FunctionASTNode(BasicASTNode):
                 name=self.name
             ))
         return NodeVisitorReturn(code)
+
+
+ValueASTNode = Union[BinOPASTNode, UnitOPASTNode,
+                     LeafASTNode, FunctionCallASTNode, FunctionASTNode]
+StatementASTNode = Union[StatementListASTNode, ValueASTNode, DefineListASTNode,
+                         FunctionReturnASTNode, IfStatementASTNode, WhileStatementASTNode, ForStatementASTNode]
 
 
 class RootASTNode(BasicASTNode):

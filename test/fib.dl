@@ -1,4 +1,4 @@
-fn fib(a: number) -> number {
+fun fib(a: number) -> number {
   if (a <= 2) {
     return 1;
   } else {
@@ -6,6 +6,6 @@ fn fib(a: number) -> number {
   }
 }
 
-fn main() {
+fun main() {
   print(Number::to_string(fib(5)));
 }

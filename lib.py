@@ -289,6 +289,12 @@ NumberLib: list[BuiltinFunction] = [
 
 FloatLib: list[BuiltinFunction] = [
     BuiltinFunction(
+        name=Lib_Complex + DoubleColon + Lib_to_string,
+        args=[complexType],
+        type=stringType,
+        fn=(lambda a:str(a))
+    ),
+    BuiltinFunction(
         name=Lib_Float + DoubleColon + Lib_to_string,
         args=[floatType],
         type=stringType,
