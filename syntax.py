@@ -1,4 +1,3 @@
-from lex_en import *
 from type import *
 from ast import *
 from symbolTable import *

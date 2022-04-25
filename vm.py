@@ -70,8 +70,10 @@ def vm(code: list[ThreeAddressCode], globalFns: dict[str, GlobalFunction], args:
                 pc = fnObj.address - 1
                 allocateStack(fnObj.memCount)
             else:
-                args = varStk[-len(fnObj.args):]
-                varStk = varStk[:-len(fnObj.args)]
+                args = []
+                if(len(fnObj.args) > 0):
+                    args = varStk[-len(fnObj.args):]
+                    varStk = varStk[:-len(fnObj.args)]
                 value = fnObj.fn(*args)
                 globalVar[0] = value
         else:

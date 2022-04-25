@@ -17,11 +17,17 @@ class Variable:
         self.type = type
         self.value = value
 
+    def __str__(self) -> str:
+        return ' '.join(('%s' % item for item in self.__dict__.values()))
+
 
 class Literal:
     def __init__(self, type, value) -> None:
         self.type = type
         self.value = value
+
+    def __str__(self) -> str:
+        return ' '.join(('%s' % item for item in self.__dict__.values()))
 
 
 class UserFunction:
@@ -31,6 +37,9 @@ class UserFunction:
         self.address = address
         self.memCount = memCount
         self.name = name
+
+    def __str__(self) -> str:
+        return ' '.join(('%s' % item for item in self.__dict__.values()))
 
 
 class BuiltinFunction:

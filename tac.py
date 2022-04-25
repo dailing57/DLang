@@ -7,11 +7,17 @@ class GlobalVariableCode:
         self.globalAddress = globalAddress
         self.type = type
 
+    def __str__(self) -> str:
+        return ' '.join(('%s' % item for item in self.__dict__.values()))
+
 
 class LocalVariableCode:
     def __init__(self, address, type) -> None:
         self.address = address
         self.type = type
+
+    def __str__(self) -> str:
+        return ' '.join(('%s' % item for item in self.__dict__.values()))
 
 
 VariableCode = Union[GlobalVariableCode, LocalVariableCode]
@@ -54,11 +60,17 @@ class NOPCode:
     def __init__(self, type) -> None:
         self.type = type
 
+    def __str__(self) -> str:
+        return ' '.join(('%s' % item for item in self.__dict__.values()))
+
 
 class FunctionCallCode:
     def __init__(self, type, name) -> None:
         self.type = type
         self.name = name
+
+    def __str__(self) -> str:
+        return ' '.join(('%s' % item for item in self.__dict__.values()))
 
 
 class FunctionReturnCode:
@@ -67,11 +79,17 @@ class FunctionReturnCode:
         self.name = name
         self.src = src
 
+    def __str__(self) -> str:
+        return ' '.join(('%s' % item for item in self.__dict__.values()))
+
 
 class GotoCode:
     def __init__(self, type, offset) -> None:
         self.type = type
         self.offset = offset
+
+    def __str__(self) -> str:
+        return ' '.join(('%s' % item for item in self.__dict__.values()))
 
 
 class IfGotoCode:
@@ -81,11 +99,17 @@ class IfGotoCode:
         self.target = target
         self.offset = offset
 
+    def __str__(self) -> str:
+        return ' '.join(('%s' % item for item in self.__dict__.values()))
+
 
 class LiteralCode:
     def __init__(self, value, type) -> None:
         self.value = value
         self.type = type
+
+    def __str__(self) -> str:
+        return ' '.join(('%s' % item for item in self.__dict__.values()))
 
 
 class BinOPCode:
@@ -95,6 +119,9 @@ class BinOPCode:
         self.x: Union[VariableCode, LiteralCode] = x
         self.y: Union[VariableCode, LiteralCode] = y
 
+    def __str__(self) -> str:
+        return ' '.join(('%s' % item for item in self.__dict__.values()))
+
 
 class UnitOPCode:
     def __init__(self, type, dst, src) -> None:
@@ -102,17 +129,26 @@ class UnitOPCode:
         self.dst = dst
         self.src = src
 
+    def __str__(self) -> str:
+        return ' '.join(('%s' % item for item in self.__dict__.values()))
+
 
 class PushStackCode:
     def __init__(self, type, src) -> None:
         self.type = type
         self.src = src
 
+    def __str__(self) -> str:
+        return ' '.join(('%s' % item for item in self.__dict__.values()))
+
 
 class CreateFunction:
     def __init__(self, funAddress, catchList) -> None:
         self.funAddress = funAddress
         self.catchList = catchList
+
+    def __str__(self) -> str:
+        return ' '.join(('%s' % item for item in self.__dict__.values()))
 
 
 ThreeAddressCode = Union[
