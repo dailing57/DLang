@@ -1,3 +1,4 @@
+import os
 from DLex.ReParser import *
 from DParse.LRParser import *
 from syntax import config as SyntaxConfig
@@ -51,22 +52,23 @@ class DLang:
                             afterRunHooks=afterRunHooks)
         if mode == 'zh':
             try:
-                with open('./seri/DLangLexer-zh', 'rb') as pkf:
+                with open('./seri/DLangLexer-zh', 'rb+') as pkf:
                     self.DLangLexer = load(pkf)
-                with open('./seri/DLangParser-zh', 'rb') as pkf:
+                with open('./seri/DLangParser-zh', 'rb+') as pkf:
                     self.DLangParser = load(pkf)
             except Exception as e:
                 self.DLangLexer = LexParser(LexConfig, True, KeyWord)
                 self.DLangParser = LRParser(SyntaxConfig)
-                with open('./seri/DLangLexer-zh', 'wb') as f:
+                os.mkdir('./seri')
+                with open('./seri/DLangLexer-zh', 'wb+') as f:
                     dump(self.DLangLexer, f)
-                with open('./seri/DLangParser-zh', 'wb') as f:
+                with open('./seri/DLangParser-zh', 'wb+') as f:
                     dump(self.DLangParser, f)
         elif mode == 'en':
             try:
-                with open('./seri/DLangLexer-en', 'rb') as pkf:
+                with open('./seri/DLangLexer-en', 'rb+') as pkf:
                     self.DLangLexer = load(pkf)
-                with open('./seri/DLangParser-en', 'rb') as pkf:
+                with open('./seri/DLangParser-en', 'rb+') as pkf:
                     self.DLangParser = load(pkf)
             except Exception as e:
                 print('Please change the type file for en.')
